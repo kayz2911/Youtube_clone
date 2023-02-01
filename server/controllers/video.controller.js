@@ -1,0 +1,211 @@
+const Video = require("../models/Video.model");
+const User = require("../models/User.model");
+const { errorResponse, DEFAULT_PAGE_SIZE } = require("../configs/route.config");
+
+async function trendingVideo(req, res, next) {
+  try {
+    const curr = new Date(); //get current date
+    const lastWeek = new Date(curr.getTime() - 1000 * 24 * 60 * 60 * 1000); //get last week date
+    const page = req.query.page;
+
+    const [videos] = await Video.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: lastWeek,
+            $lt: curr,
+          },
+        },
+      },
+      {
+        $facet: {
+          docs: [
+            { $sort: { views: -1 } },
+            { $skip: DEFAULT_PAGE_SIZE * (page - 1) },
+            { $limit: DEFAULT_PAGE_SIZE },
+          ],
+          meta: [{ $count: "total_documents" }],
+        },
+      },
+      { $unwind: "$meta" },
+    ]);
+    const totalDocs = videos?.meta.total_documents || 0;
+    const output = {
+      docs: videos?.docs || [],
+      page: page,
+      pageSize: DEFAULT_PAGE_SIZE,
+      total_pages: Math.ceil(totalDocs / DEFAULT_PAGE_SIZE),
+      total_documents: totalDocs,
+    };
+    res.status(200).json(output);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function randomVideo(req, res, next) {
+  const page = req.query.page;
+
+  try {
+    const [videos] = await Video.aggregate([
+      {$match : {}},
+      {
+        $facet: {
+          docs: [
+            { $skip: DEFAULT_PAGE_SIZE * (page - 1) },
+            { $limit: DEFAULT_PAGE_SIZE },
+          ],
+          meta: [{ $count: "total_documents" }],
+        },
+      },
+      { $unwind: "$meta" },
+    ]);
+
+    const totalDocs = videos?.meta.total_documents || 0;
+    const output = {
+      docs: videos?.docs || [],
+      page: page,
+      pageSize: DEFAULT_PAGE_SIZE,
+      total_pages: Math.ceil(totalDocs / DEFAULT_PAGE_SIZE),
+      total_documents: totalDocs,
+    };
+    res.status(200).json(output);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function subscribeVideo(req, res, next) {
+  try {
+    const user = await User.findById(req.user.id);
+    const subscribedChannels = user.subscribedUsers;
+    const page = req.query.page;
+
+    const list = await Promise.all(
+      subscribedChannels.map((channelId) => {
+        return Video.find({ userId: channelId });
+      })
+    );
+    res.status(200).json(list.flat().sort((a, b) => b.createdAt - a.createdAt));
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function addVideo(req, res, next) {
+  const newVideo = new Video({ userId: req.user.id, ...req.body });
+  try {
+    const savedVideo = await newVideo.save();
+    res.status(201).json(savedVideo);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateVideo(req, res, next) {
+  try {
+    const video = await Video.findById(req.params.id);
+
+    if (!video) {
+      return res.status(404).send(errorResponse.DEFAULT_404_ERROR);
+    }
+
+    if (req.user.id === updatedVideo.userId) {
+      const updatedVideo = await Video.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: req.body,
+        },
+        {
+          new: true,
+        }
+      );
+      res.status(200).json(updatedVideo);
+    } else {
+      return res.status(403).send("You can update only your video");
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteVideo(req, res, next) {
+  try {
+    const video = await Video.findById(req.params.id);
+
+    if (!video) {
+      return res.status(404).send(errorResponse.DEFAULT_404_ERROR);
+    }
+
+    if (req.user.id === updatedVideo.userId) {
+      await Video.findByIdAndDelete(req.params.id);
+      res.status(200).json("The video has been deleted");
+    } else {
+      return res.status(403).send("You can delete only your video");
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getVideo(req, res, next) {
+  try {
+    const video = await Video.findById(req.params.id);
+    res.status(200).json(video);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function addView(req, res, next) {
+  try {
+    await Video.findByIdAndUpdate(req.params.id, {
+      $inc: { views: 1 },
+    });
+    res.status(200).json("The view has been increased");
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getVideoByTag(req, res, next) {
+  const tags = req.query.tags?.split(",");
+  try {
+    const videos = await Video.aggregate([
+      { $sample: { size: 20 } },
+      { $match: { tags: { $in: tags } } },
+    ]);
+    res.status(200).json(videos);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function searchVideo(req, res, next) {
+  if (req.query) {
+    const query = req.query.q;
+    try {
+      const videos = await Video.find({
+        title: { $regex: query, $options: "i" },
+      }).limit(40);
+      res.status(200).json(videos);
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    return;
+  }
+}
+
+module.exports = {
+  trendingVideo,
+  randomVideo,
+  subscribeVideo,
+  addVideo,
+  updateVideo,
+  deleteVideo,
+  getVideo,
+  addView,
+  getVideoByTag,
+  searchVideo,
+};
