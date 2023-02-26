@@ -4,6 +4,7 @@ const {
   errorResponse,
   REFRESH_TOKEN_EXPIRE_TIME,
 } = require("../configs/route.config");
+const sendEmail = require("../services/sendEmail.service");
 const authorizerService = require("../services/authorizer.service");
 
 const tokenCookieOptions = {
@@ -17,6 +18,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9]{4,14}$/;
 const EMAIL_REGEX = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
 const PASSWORD_REGEX = /^[^\s]{6,}$/;
 
+//Register
 async function validateRegisterInput(req, res, next) {
   const { name, email, password } = req.body;
   if (!name || !email || !password)
@@ -47,6 +49,7 @@ async function registerUser(req, res, next) {
   }
 }
 
+//Login
 async function authenticateUser(req, res, next) {
   const { email, password } = req.body;
   if (!email || !password)
@@ -86,12 +89,70 @@ async function handleLoginUser(req, res, next) {
   }
 }
 
+//Forgot password
+async function authenticateForgetPassword(req, res, next) {
+  const { email } = req.body;
+  if (!email)
+    return res.status(400).send(errorResponse.MISSING_USER_LOGIN_FIELDS);
+
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    return res.status(401).send(errorResponse.WRONG_EMAIL_PASSWORD);
+  }
+
+  req.user = user;
+  next();
+}
+
+async function handleForgetPasswordRequest(req, res, next) {
+  const user = req.user;
+  const token = authorizerService.generateResetPasswordToken(
+    user._id,
+    user.email
+  );
+
+  user.resetPasswordToken = token;
+  user.save();
+
+  //Send mail to fill new password
+  sendEmail(
+    user.email,
+    "Reset Password",
+    "Link to reset password: " +
+      process.env.CLIENT_DOMAIN +
+      "/reset_password?token=" +
+      token
+  );
+
+  res.status(200).send("Mail sent");
+}
+
+async function handleResetPassword(req, res) {
+  const user = req.payload;
+  const salt = bcrypt.genSaltSync(10);
+
+  await User.findByIdAndUpdate(req.payload.id, {
+    resetPasswordToken: "",
+    password: bcrypt.hashSync(req.body.newPassword, salt),
+  });
+
+  sendEmail(
+    user.email,
+    "Password Reset Confirmation",
+    "Your new password is: " + req.body.newPassword
+  );
+
+  res.status(200).send("Password Reset mail sent");
+}
+
+//Refresh token
 async function handleRefreshToken(req, res) {
   const { id } = req.payload; // from verifyRefreshToken() middleware
   const accessToken = authorizerService.generateAccessToken(id);
   return res.status(200).send({ accessToken });
 }
 
+//Logout
 async function handleLogout(req, res, next) {
   try {
     await User.findByIdAndUpdate(req.payload.id, { refreshToken: "" });
@@ -107,6 +168,9 @@ module.exports = {
   registerUser,
   authenticateUser,
   handleLoginUser,
+  authenticateForgetPassword,
+  handleForgetPasswordRequest,
+  handleResetPassword,
   handleRefreshToken,
   handleLogout,
 };

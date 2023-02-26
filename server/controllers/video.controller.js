@@ -44,11 +44,10 @@ async function trendingVideo(req, res, next) {
 }
 
 async function randomVideo(req, res, next) {
-  const page = req.query.page;
-
   try {
+    const page = req.query.page;
+
     const [videos] = await Video.aggregate([
-      {$match : {}},
       {
         $facet: {
           docs: [
@@ -86,7 +85,20 @@ async function subscribeVideo(req, res, next) {
         return Video.find({ userId: channelId });
       })
     );
-    res.status(200).json(list.flat().sort((a, b) => b.createdAt - a.createdAt));
+    const videos = list.flat().sort((a, b) => b.createdAt - a.createdAt);
+
+    const output = {
+      docs:
+        videos.slice(
+          (page - 1) * DEFAULT_PAGE_SIZE,
+          page * DEFAULT_PAGE_SIZE
+        ) || [],
+      page: page,
+      pageSize: DEFAULT_PAGE_SIZE,
+      total_pages: Math.ceil(videos.length / DEFAULT_PAGE_SIZE),
+      total_documents: videos.length,
+    };
+    res.status(200).json(output);
   } catch (error) {
     next(error);
   }
@@ -169,13 +181,33 @@ async function addView(req, res, next) {
 }
 
 async function getVideoByTag(req, res, next) {
-  const tags = req.query.tags?.split(",");
   try {
-    const videos = await Video.aggregate([
-      { $sample: { size: 20 } },
+    const tags = req.query.tags?.split(",");
+    const page = req.query.page;
+    const [videos] = await Video.aggregate([
       { $match: { tags: { $in: tags } } },
+      {
+        $facet: {
+          docs: [
+            { $skip: DEFAULT_PAGE_SIZE * (page - 1) },
+            { $limit: DEFAULT_PAGE_SIZE },
+          ],
+          meta: [{ $count: "total_documents" }],
+        },
+      },
+      { $unwind: "$meta" },
     ]);
-    res.status(200).json(videos);
+
+    const totalDocs = videos?.meta.total_documents || 0;
+    const output = {
+      docs: videos?.docs || [],
+      page: page,
+      pageSize: DEFAULT_PAGE_SIZE,
+      total_pages: Math.ceil(totalDocs / DEFAULT_PAGE_SIZE),
+      total_documents: totalDocs,
+    };
+
+    res.status(200).json(output);
   } catch (error) {
     next(error);
   }
@@ -183,17 +215,39 @@ async function getVideoByTag(req, res, next) {
 
 async function searchVideo(req, res, next) {
   if (req.query) {
-    const query = req.query.q;
     try {
-      const videos = await Video.find({
-        title: { $regex: query, $options: "i" },
-      }).limit(40);
-      res.status(200).json(videos);
+      const query = req.query.q;
+      const page = req.query.page;
+
+      const [videos] = await Video.aggregate([
+        { $match: { title: { $regex: query, $options: "i" } } },
+        {
+          $facet: {
+            docs: [
+              { $skip: DEFAULT_PAGE_SIZE * (page - 1) },
+              { $limit: DEFAULT_PAGE_SIZE },
+            ],
+            meta: [{ $count: "total_documents" }],
+          },
+        },
+        { $unwind: "$meta" },
+      ]);
+
+      const totalDocs = videos?.meta.total_documents || 0;
+      const output = {
+        docs: videos?.docs || [],
+        page: page,
+        pageSize: DEFAULT_PAGE_SIZE,
+        total_pages: Math.ceil(totalDocs / DEFAULT_PAGE_SIZE),
+        total_documents: totalDocs,
+      };
+
+      res.status(200).json(output);
     } catch (error) {
       next(error);
     }
   } else {
-    return;
+    return res.status(200).send(errorResponse.INVALID_QUERY);
   }
 }
 

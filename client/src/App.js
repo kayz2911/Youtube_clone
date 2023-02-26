@@ -8,13 +8,15 @@ import Navbar from "./components/Navbar/Navbar";
 import { darkTheme, lightTheme } from "./utils/Theme";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./pages/ForgotPassword/ResetPassword";
 import Register from "./pages/Register/Register";
 import Video from "./pages/Video/Video";
 import Search from "./pages/Search/Search";
 import VideoCategory from "./pages/VideoCategory/VideoCategory";
 import PersistLogin from "./components/auth/PersistLogin";
 import RequireAuth from "./components/Modal/RequireAuth/RequireAuth";
-import PageNotFound from "./pages/HandleError/PageNotFound";
+import PageNotFound from "./components/HandleError/PageNotFound";
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -31,17 +33,19 @@ function App() {
                 <Route path="/">
                   <Route element={<PersistLogin />}>
                     <Route path="login" element={<Login />} />
+                    <Route path="forgot_password" element={<ForgotPassword />} />
+                    <Route path="reset_password" element={<ResetPassword />} />
                     <Route path="register" element={<Register />} />
                     <Route index element={<Home type="random" />} />
                     <Route path="trending" element={<Home type="trending" />} />
                     <Route path="search" element={<Search />} />
                     <Route element={<RequireAuth />}>
                       <Route
-                        path="subscriptionVideo"
-                        element={<Home type="subscribeVideo" />}
+                        path="subscribeVideo"
+                        element={<Home type="subscribeVideo"/>}
                       />
                     </Route>
-                    <Route path="video">
+                    <Route path="video/">
                       <Route path="tags/:type" element={<VideoCategory />} />
                       <Route path=":id" element={<Video />} />
                     </Route>

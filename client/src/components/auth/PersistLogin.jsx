@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import useRefreshToken from "../../hooks/useRefreshToken";
 import { Outlet } from "react-router-dom";
 import { useEffect, useRef } from "react";
-import Loading from "../../pages/HandleError/Loading";
+import Loading from "../HandleError/Loading";
 
 const PersistLogin = () => {
   const isFirstTime = useRef(true);

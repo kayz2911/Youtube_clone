@@ -5,7 +5,6 @@ import {
   Container,
   Content,
   VideoWrapper,
-  VideoFrame,
   Title,
   Details,
   Info,
@@ -29,7 +28,7 @@ import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import Recommendation from "../../components/Recommendation/Recommendation";
 import Comments from "../../components/Comment/Comments";
-import SomethingWrong from "../HandleError/SomethingWrong";
+import Loading from "../../components/HandleError/Loading";
 import { userActions } from "../../store/userSlice";
 import { videoActions } from "../../store/videoSlice";
 import useBackendApi from "../../hooks/useBackendApi";
@@ -180,7 +179,7 @@ const Video = () => {
                 }}
               >
                 {currentUser?.subscribedUsers?.includes(channel._id)
-                  ? "SUBSCRIBED"
+                  ? "UNSUBSCRIBE"
                   : "SUBSCRIBE"}
               </Subscribe>
             ) : (
@@ -197,7 +196,7 @@ const Video = () => {
       )}
     </>
   ) : (
-    <SomethingWrong />
+    <Loading />
   );
 
   return videoPage;

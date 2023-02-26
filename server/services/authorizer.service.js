@@ -14,6 +14,17 @@ function generateAccessToken(id) {
   return token;
 }
 
+function generateResetPasswordToken(id, email) {
+  const token = jwt.sign(
+    { id, email },
+    process.env.RESET_PASSWORD_TOKEN_SECRET_KEY,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRE_TIME,
+    }
+  );
+  return token;
+}
+
 function generateRefreshToken(id) {
   const token = jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET_KEY, {
     expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
@@ -28,6 +39,29 @@ function verifyAccessToken(req, res, next) {
   }
   try {
     req.user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY);
+    next();
+  } catch (error) {
+    console.log(error);
+    if (error instanceof jwt.JsonWebTokenError)
+      return res.status(403).send({ error: "Invalid token" });
+    return res.status(400).send({ error: "Invalid request" });
+  }
+}
+
+async function verifyResetPasswordToken(req, res, next) {
+  const token = req.query?.token;
+  if (!token) {
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+  try {
+    const payload = jwt.verify(
+      token,
+      process.env.RESET_PASSWORD_TOKEN_SECRET_KEY
+    );
+    const user = await User.findById(payload.id);
+    if (user.resetPasswordToken !== token)
+      return res.status(403).send({ error: "Invalid token" });
+    req.payload = payload;
     next();
   } catch (error) {
     console.log(error);
@@ -67,7 +101,9 @@ function authorizeUser(req, res, next) {
 module.exports = {
   generateAccessToken,
   generateRefreshToken,
+  generateResetPasswordToken,
   verifyAccessToken,
+  verifyResetPasswordToken,
   authorizeUser,
   verifyRefreshToken,
 };

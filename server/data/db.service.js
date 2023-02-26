@@ -6,8 +6,6 @@ const helpers = require("../helpers/helpers");
 const Video = require("../models/video.model");
 const User = require("../models/user.model");
 
-
-
 const loadUser = async (id) => {
   const mappedModel = (dbModel) => {
     return {
@@ -45,7 +43,7 @@ const loadVideos = async (id) => {
       videoUrl: `${config.BASE_VIDEO_URL}/${dbModel.id.videoId}`,
       desc: dbModel.snippet.description,
       views: helpers.getRandomIntInclusive(1000000, 100000000),
-      tags: [],
+      tags: ["music"],
       likes: [],
       dislikes: [],
       createdAt: new Date(dbModel.snippet.publishedAt),
@@ -60,7 +58,7 @@ const loadVideos = async (id) => {
       await Video.findOneAndUpdate(
         { videoUrl: `${config.BASE_VIDEO_URL}/${item.id.videoId}` },
         { $setOnInsert: mappedModel(item) },
-        { new: true, upsert: true, strict: false,  timestamps: false, }
+        { new: true, upsert: true, strict: false, timestamps: false }
       );
 
       // Update data User

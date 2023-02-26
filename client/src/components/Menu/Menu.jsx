@@ -62,7 +62,7 @@ const Menu = (props) => {
           </Item>
         </Link>
         <Link
-          to="subscriptionVideo"
+          to="subscribeVideo"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>

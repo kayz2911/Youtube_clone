@@ -44,6 +44,7 @@ router.get(
 router.get(
   "/search",
   routeValidator.validateSearchParams,
+  routeValidator.validatePageParam,
   videoController.searchVideo
 );
 

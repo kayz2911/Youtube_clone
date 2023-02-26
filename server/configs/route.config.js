@@ -18,7 +18,7 @@ module.exports = {
   },
   ACCESS_TOKEN_EXPIRE_TIME: 15 * 60, // 15 mins
   REFRESH_TOKEN_EXPIRE_TIME: 24 * 60 * 60, // 1d
-  DEFAULT_PAGE_SIZE: 10,
+  DEFAULT_PAGE_SIZE: 6,
   movieSortOptions: {
     releaseDate: { releaseDate: -1 },
     popular: "",

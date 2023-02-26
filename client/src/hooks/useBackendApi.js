@@ -24,13 +24,13 @@ const useBackendApi = () => {
           return;
         }
 
-        if (error.response?.status === 403) {
-          const newToken = await refresh();
-          const prevConfig = error.config;
-          prevConfig.headers["Authorization"] = `Bearer ${newToken}`;
-          // resent prev request
-          return backendApi.axiosPrivateClient(prevConfig);
-        }
+        // if (error.response?.status === 403) {
+        //   const newToken = await refresh();
+        //   const prevConfig = error.config;
+        //   prevConfig.headers["Authorization"] = `Bearer ${newToken}`;
+        //   // resent prev request
+        //   return backendApi.axiosPrivateClient(prevConfig);
+        // }
         Promise.reject(error);
       }
     );

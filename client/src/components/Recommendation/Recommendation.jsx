@@ -1,36 +1,54 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Container } from "./RecommendationStyled";
-import Card from "../Card/Card";
-
+import InfiniteScroll from "../../components/InfiniteScroll/InfiniteScroll";
 import useBackendApi from "../../hooks/useBackendApi";
+import CardLoader from "../../components/Card/CardLoader";
+const Card = React.lazy(() => import("../../components/Card/Card"));
 
 const Recommendation = (props) => {
   const backendApi = useBackendApi();
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [videos, setVideos] = useState([]);
+  const [currentVideo, setCurrentVideo] = useState(props.currentVideo);
 
   useEffect(() => {
-    const fetchVideos = async () => {
+    const loadVideos = async (pageNumber) => {
       try {
-        const videoRes = await (
-          await backendApi.getSimilarVideos(props.currentVideo.tags)
-        ).data;
-        videoRes.splice(
-          videoRes.findIndex((video) => video._id === props.currentVideo._id),
-          1
+        const { data } = await await backendApi.getSimilarVideos(
+          currentVideo.tags,
+          pageNumber
         );
-        setVideos(videoRes ? videoRes : []);
+        setVideos((prevVideos) => [
+          ...prevVideos,
+          ...data.docs.filter((v) => v._id !== currentVideo._id),
+        ]);
+        setTotalPages(data.total_pages);
       } catch (error) {
         console.log(error);
       }
     };
-    fetchVideos();
-  }, [backendApi, props.currentVideo.tags, props.currentVideo._id]);
+    loadVideos(page);
+  }, [backendApi, currentVideo, page]);
+
+  useEffect(() => {
+    setCurrentVideo(props.currentVideo);
+    setVideos([]);
+    setPage(1);
+  }, [props.currentVideo]);
 
   return (
     <Container>
-      {videos.map((video) => (
-        <Card type="sm" key={video._id} video={video} />
-      ))}
+      <InfiniteScroll
+        fetchMore={() => setPage((prev) => prev + 1)}
+        hasMore={page < totalPages}
+      >
+        {videos.map((video, i) => (
+          <Suspense key={i} fallback={<CardLoader />}>
+            <Card type="sm" key={video._id} video={video} />
+          </Suspense>
+        ))}
+      </InfiniteScroll>
     </Container>
   );
 };

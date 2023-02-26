@@ -11,7 +11,7 @@ export const Container = styled.div`
 `;
 
 export const Wrapper = styled.div`
-  padding: 18px 26px;
+  padding: 18px 15px;
 `;
 
 export const Logo = styled.div`
@@ -32,7 +32,9 @@ export const Item = styled.div`
   gap: 20px;
   cursor: pointer;
   padding: 7.5px 0px;
+  border-radius: 5px;
 
+  &:active,
   &:hover {
     background-color: ${({ theme }) => theme.soft};
   }

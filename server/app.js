@@ -25,7 +25,7 @@ app.use("/api/comments", commentRoutes);
 app.use(errorHandler);
 
 app.get("/", (req, res) => {
-  res.send("Movie streaming api");
+  res.send("Youtube clone api");
 });
 
 module.exports = app;

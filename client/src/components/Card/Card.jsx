@@ -36,9 +36,9 @@ const Card = (props) => {
         <Details type={props.type}>
           <ChannelImage type={props.type} src={channel.img} />
           <Texts>
-            <Title>{props.video.title}</Title>
-            <ChannelName>{channel.name}</ChannelName>
-            <Info>
+            <Title type={props.type}>{props.video.title}</Title>
+            <ChannelName type={props.type}>{channel.name}</ChannelName>
+            <Info type={props.type}>
               {Intl.NumberFormat("en-US", {
                 notation: "compact",
                 maximumFractionDigits: 0,

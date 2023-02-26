@@ -5,6 +5,8 @@ const endpoint = {
   register: "/auth/register",
   login: "/auth/login",
   logout: "/auth/logout",
+  forgotPassWord: "/auth/forgot_password",
+  resetPassword: "/auth/reset_password",
   refreshToken: "/auth/refresh_token",
 };
 
@@ -26,6 +28,14 @@ const backendApi = {
 
   loginUser: (email, password) => {
     return axiosPrivateClient.post(endpoint.login, { email, password });
+  },
+
+  forgotPassWord: (email) => {
+    return axiosPrivateClient.post(endpoint.forgotPassWord, { email });
+  },
+
+  resetPassword: (token, newPassword) => {
+    return axiosPrivateClient.post(endpoint.resetPassword + token, { newPassword });
   },
 
   logoutUser: () => {
@@ -89,14 +99,14 @@ const backendApi = {
     return video;
   },
 
-  getSimilarVideos: async (tags) => {
-    const path = `/videos/tags?tags=${tags}`;
+  getSimilarVideos: async (tags, page) => {
+    const path = `/videos/tags?tags=${tags}&page=${page}`;
     const videos = await axiosClient.get(path);
     return videos;
   },
 
-  searchVideos: async (q) => {
-    const path = `/videos/search${q}`;
+  searchVideos: async (q, page) => {
+    const path = `/videos/search${q}&page=${page}`;
     const videos = await axiosClient.get(path);
     return videos;
   },

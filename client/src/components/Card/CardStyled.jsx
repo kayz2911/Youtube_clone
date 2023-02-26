@@ -34,18 +34,18 @@ export const ChannelImage = styled.img`
 
 export const Texts = styled.div``;
 export const Title = styled.h1`
-  font-size: 16px;
+  font-size: ${(props) => (props.type === "sm" ? "14px" : "16px")};
   font-weight: 500;
   color: ${({ theme }) => theme.text};
 `;
 
 export const ChannelName = styled.h2`
-  font-size: 14px;
+  font-size: ${(props) => (props.type === "sm" ? "12px" : "14px")};
   color: ${({ theme }) => theme.textSoft};
-  margin: 9px 0px;
+  margin: ${(props) => (props.type === "sm" ? "5px 0px" : "9px 0px")};
 `;
 
 export const Info = styled.div`
-  font-size: 14px;
+  font-size: ${(props) => (props.type === "sm" ? "12px" : "14px")};
   color: ${({ theme }) => theme.textSoft};
 `;

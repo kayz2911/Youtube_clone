@@ -36,6 +36,7 @@ export const Input = styled.input`
   background-color: transparent;
   outline: none;
   color: ${({ theme }) => theme.text};
+  width: 100%;
 `;
 
 export const Button = styled.button`

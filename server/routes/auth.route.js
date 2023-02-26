@@ -27,6 +27,19 @@ router.get(
   authController.handleRefreshToken
 );
 
+//Forgot Password
+router.post(
+  "/forgot_password",
+  authController.authenticateForgetPassword,
+  authController.handleForgetPasswordRequest
+);
+
+router.post(
+  "/reset_password",
+  authorizerService.verifyResetPasswordToken,
+  authController.handleResetPassword
+);
+
 //Logout
 router.post(
   "/logout",

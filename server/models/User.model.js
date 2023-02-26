@@ -29,6 +29,7 @@ const UserSchema = new mongoose.Schema(
       type: [String],
     },
     refreshToken: { type: String },
+    resetPasswordToken: { type: String },
   },
   { timestamps: true }
 );
