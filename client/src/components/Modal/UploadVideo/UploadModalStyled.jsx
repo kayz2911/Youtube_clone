@@ -51,6 +51,49 @@ export const Description = styled.textarea`
   background-color: transparent;
 `;
 
+export const CheckboxGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+export const CheckboxOption = styled.label`
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  input[type="checkbox"] {
+    display: none;
+  }
+  span {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    vertical-align: middle;
+    position: relative;
+    &:after {
+      content: "\\2713";
+      color: #fff;
+      font-size: 14px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.2s ease-in-out;
+    }
+  }
+  input[type="checkbox"]:checked + span {
+    background-color: #0077ff;
+    border-color: #0077ff;
+  }
+  input[type="checkbox"]:checked + span:after {
+    transform: translate(-50%, -50%) scale(1);
+  }
+`;
+
 export const Button = styled.button`
   border-radius: 3px;
   border: none;

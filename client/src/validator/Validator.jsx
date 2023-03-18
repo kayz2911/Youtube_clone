@@ -5,3 +5,5 @@ const PASSWORD_REGEX = /^[^\s]{6,}$/;
 export const isUserNameValid = (value) => USERNAME_REGEX.test(value);
 export const isEmailValid = (value) => EMAIL_REGEX.test(value);
 export const isPasswordValid = (value) => PASSWORD_REGEX.test(value);
+
+export const isNotEmpty = (value) => value.length !== 0;

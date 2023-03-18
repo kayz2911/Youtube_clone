@@ -33,6 +33,11 @@ async function validateRegisterInput(req, res, next) {
   if (!PASSWORD_REGEX.test(password))
     return res.status(400).send(errorResponse.INVALID_PASSWORD);
 
+  const user = await User.findOne({ email: email });
+  if (user) {
+    return res.status(400).send(errorResponse.USER_EXISTS);
+  }
+
   next();
 }
 
@@ -43,7 +48,7 @@ async function registerUser(req, res, next) {
     const newUser = new User({ ...req.body, password: hashPassword });
 
     await newUser.save();
-    res.status(201).send("User has been created");
+    res.status(201).send(req.body);
   } catch (err) {
     next(err);
   }

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Wrapper,
@@ -6,11 +7,131 @@ import {
   Title,
   Input,
   Description,
+  CheckboxGroup,
+  CheckboxOption,
   Button,
   Label,
 } from "./UploadModalStyled";
+import { isNotEmpty } from "../../../validator/Validator";
+import useInput from "../../../hooks/useInput";
+import useUploadFile from "../../../hooks/useUploadFile";
+import useBackendApi from "../../../hooks/useBackendApi";
 
 const UploadModal = (props) => {
+  const backendApi = useBackendApi();
+  const navigate = useNavigate();
+  const [img, setImg] = useState(null);
+  const [video, setVideo] = useState(null);
+  const [selectedTags, setSelectedTags] = useState([]);
+
+  const {
+    value: titleValue,
+    isValid: titleIsValid,
+    hasError: titleHasError,
+    valueChangeHandler: titleChangeHandler,
+    inputBlurHandler: titleBlurHandler,
+    reset: resetTitle,
+  } = useInput(isNotEmpty);
+
+  const {
+    value: descValue,
+    isValid: descIsValid,
+    hasError: descHasError,
+    valueChangeHandler: descChangeHandler,
+    inputBlurHandler: descBlurHandler,
+    reset: resetDesc,
+  } = useInput(isNotEmpty);
+
+  let formIsValid = false;
+  if (titleIsValid && descIsValid) {
+    formIsValid = true;
+  }
+
+  const {
+    error: videoError,
+    downloadURL: videoSrc,
+    uploadFile: uploadVideoFirebase,
+  } = useUploadFile();
+
+  const {
+    error: imgError,
+    downloadURL: imgSrc,
+    uploadFile: uploadImgFirebase,
+  } = useUploadFile();
+
+  const handleImgFileChange = (e) => {
+    setImg(e.target.files[0]);
+  };
+
+  const handleVideoFileChange = (e) => {
+    setVideo(e.target.files[0]);
+  };
+
+  const handleTagChange = (event) => {
+    const tagName = event.target.name;
+    const isChecked = event.target.checked;
+
+    if (isChecked) {
+      setSelectedTags([...selectedTags, tagName]);
+    } else {
+      setSelectedTags(selectedTags.filter((tag) => tag !== tagName));
+    }
+  };
+
+  const uploadVideo = useCallback(async () => {
+    if (videoError || imgError) {
+      return;
+    }
+
+    try {
+      const res = await backendApi.addVideo({
+        title: titleValue,
+        desc: descValue,
+        videoUrl: videoSrc,
+        imgUrl: imgSrc,
+        tags: selectedTags,
+      });
+      if (res.status === 201) {
+        resetTitle();
+        resetDesc();
+        props.setShowUploadVideoModal(false);
+        navigate(`video/${res.data._id}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [
+    videoError,
+    imgError,
+    backendApi,
+    titleValue,
+    descValue,
+    videoSrc,
+    imgSrc,
+    selectedTags,
+    resetTitle,
+    resetDesc,
+    props,
+    navigate,
+  ]);
+
+  const handleUploadVideo = async (e) => {
+    e.preventDefault();
+    if (!titleIsValid || !descIsValid || !video || !img) {
+      return;
+    }
+
+    await uploadVideoFirebase(video, "videos/");
+    await uploadImgFirebase(img, "images/videoImg");
+  };
+
+  useEffect(() => {
+    // Only execute if both downloadURL values are available
+    if (videoSrc && imgSrc) {
+      uploadVideo();
+    }
+  }, [videoSrc, imgSrc, uploadVideo]);
+
   return (
     <Container>
       <Wrapper>
@@ -18,20 +139,96 @@ const UploadModal = (props) => {
           onClick={() =>
             props.setShowUploadVideoModal
               ? props.setShowUploadVideoModal(false)
-              : ""
+              : null
           }
         >
           X
         </Close>
         <Title>Upload a New Video</Title>
         <Label>Video:</Label>
-        <Input type="file" accept="video/*" />
-        <Input type="text" placeholder="Title" />
-        <Description placeholder="Description" rows={8} />
-        <Input type="text" placeholder="Separate the tags with commas." />
+        <Input type="file" accept="video/*" onChange={handleVideoFileChange} />
+        {videoError ? <p>Upload video failed</p> : null}
+
+        <Input
+          type="text"
+          placeholder={titleHasError ? "Please enter title" : "Title"}
+          value={titleValue}
+          onChange={titleChangeHandler}
+          onBlur={titleBlurHandler}
+          style={titleHasError ? { borderColor: "red" } : null}
+        />
+
+        <Description
+          placeholder={
+            titleHasError ? "Please enter description" : "Description"
+          }
+          rows={8}
+          value={descValue}
+          onChange={descChangeHandler}
+          onBlur={descBlurHandler}
+          style={descHasError ? { borderColor: "red" } : null}
+        />
+
+        <Label htmlFor="tags">Tags:</Label>
+        <CheckboxGroup>
+          <CheckboxOption>
+            <input
+              type="checkbox"
+              name="music"
+              checked={selectedTags.includes("music")}
+              onChange={handleTagChange}
+            />
+            <span></span>
+            Music
+          </CheckboxOption>
+          <CheckboxOption>
+            <input
+              type="checkbox"
+              name="sports"
+              checked={selectedTags.includes("sports")}
+              onChange={handleTagChange}
+            />
+            <span></span>
+            Sports
+          </CheckboxOption>
+          <CheckboxOption>
+            <input
+              type="checkbox"
+              name="gaming"
+              checked={selectedTags.includes("gaming")}
+              onChange={handleTagChange}
+            />
+            <span></span>
+            Gaming
+          </CheckboxOption>
+          <CheckboxOption>
+            <input
+              type="checkbox"
+              name="movie"
+              checked={selectedTags.includes("movie")}
+              onChange={handleTagChange}
+            />
+            <span></span>
+            Movie
+          </CheckboxOption>
+          <CheckboxOption>
+            <input
+              type="checkbox"
+              name="news"
+              checked={selectedTags.includes("news")}
+              onChange={handleTagChange}
+            />
+            <span></span>
+            News
+          </CheckboxOption>
+        </CheckboxGroup>
+
         <Label>Image:</Label>
-        <Input type="file" accept="image/*" />
-        <Button>Upload</Button>
+        <Input type="file" accept="image/*" onChange={handleImgFileChange} />
+        {imgError ? <p>Upload image failed</p> : null}
+        <Button onClick={handleUploadVideo} disabled={!formIsValid}>
+          Upload
+        </Button>
       </Wrapper>
     </Container>
   );

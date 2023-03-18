@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Wrapper,
@@ -9,24 +10,112 @@ import {
   More,
   Helpers,
   Helper,
+  Label,
 } from "./RegisterStyled";
 import { Link } from "react-router-dom";
+import {
+  isUserNameValid,
+  isEmailValid,
+  isPasswordValid,
+} from "../../validator/Validator";
+import useInput from "../../hooks/useInput";
+import useUploadFile from "../../hooks/useUploadFile";
 import useBackendApi from "../../hooks/useBackendApi";
 
 const Register = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const backendApi = useBackendApi();
+  const navigate = useNavigate();
+  const [img, setImg] = useState(null);
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+  const {
+    value: usernameValue,
+    isValid: usernameIsValid,
+    hasError: usernameHasError,
+    valueChangeHandler: usernameChangeHandler,
+    inputBlurHandler: usernameBlurHandler,
+    reset: resetUsername,
+  } = useInput(isUserNameValid);
+
+  const {
+    value: emailValue,
+    isValid: emailIsValid,
+    hasError: emailHasError,
+    valueChangeHandler: emailChangeHandler,
+    inputBlurHandler: emailBlurHandler,
+    reset: resetEmail,
+  } = useInput(isEmailValid);
+
+  const {
+    value: passwordValue,
+    isValid: passwordIsValid,
+    hasError: passwordHasError,
+    valueChangeHandler: passwordChangeHandler,
+    inputBlurHandler: passwordBlurHandler,
+    reset: resetPassword,
+  } = useInput(isPasswordValid);
+
+  let formIsValid = false;
+  if (usernameIsValid && emailIsValid && passwordIsValid) {
+    formIsValid = true;
+  }
+
+  const {
+    error: imgError,
+    downloadURL: imgSrc,
+    uploadFile: uploadImgFirebase,
+  } = useUploadFile();
+
+  const handleImgFileChange = (e) => {
+    setImg(e.target.files[0]);
+  };
+
+  const registerUser = useCallback(async () => {
+    if (imgError) {
+      return;
+    }
     try {
+      const res = await backendApi.registerUser({
+        name: usernameValue,
+        email: emailValue,
+        password: passwordValue,
+        img: imgSrc,
+      });
+      if (res.status === 201) {
+        resetUsername();
+        resetEmail();
+        resetPassword();
+        navigate("/login");
+      }
     } catch (error) {
       console.log(error);
     }
+  }, [
+    imgError,
+    usernameValue,
+    emailValue,
+    passwordValue,
+    imgSrc,
+    resetUsername,
+    resetEmail,
+    resetPassword,
+    navigate,
+    backendApi,
+  ]);
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (!usernameIsValid || !emailIsValid || !passwordIsValid || !img) {
+      return;
+    }
+    await uploadImgFirebase(img, "images/channelImg/");
   };
+
+  useEffect(() => {
+    // Only execute if downloadURL values are available
+    if (imgSrc) {
+      registerUser();
+    }
+  }, [imgSrc, registerUser]);
 
   return (
     <Container>
@@ -34,16 +123,34 @@ const Register = () => {
         <Title>Register</Title>
         <SubTitle>to continue to YouTube</SubTitle>
         <Input
-          placeholder="username"
-          onChange={(e) => setName(e.target.value)}
+          placeholder={usernameHasError ? "Username is invalid" : "Username"}
+          value={usernameValue}
+          onChange={usernameChangeHandler}
+          onBlur={usernameBlurHandler}
+          style={usernameHasError ? { borderColor: "red" } : null}
         />
-        <Input placeholder="email" onChange={(e) => setEmail(e.target.value)} />
+        <Input
+          placeholder={emailHasError ? "Email is invalid" : "Email"}
+          value={emailValue}
+          onChange={emailChangeHandler}
+          onBlur={emailBlurHandler}
+          style={emailHasError ? { borderColor: "red" } : null}
+        />
         <Input
           type="password"
-          placeholder="password"
-          onChange={(e) => setPassword(e.target.value)}
+          placeholder={passwordHasError ? "Password is invalid" : "Password"}
+          value={passwordValue}
+          onChange={passwordChangeHandler}
+          onBlur={passwordBlurHandler}
+          style={passwordHasError ? { borderColor: "red" } : null}
         />
-        <Button onClick={handleRegister}>Sign up</Button>
+
+        <Label>Image:</Label>
+        <Input type="file" accept="image/*" onChange={handleImgFileChange} />
+        {imgError ? <p>Upload image failed</p> : null}
+        <Button onClick={handleRegister} disabled={!formIsValid}>
+          Sign up
+        </Button>
         <Link
           to="/login"
           style={{ textDecoration: "none", color: "inherit", fontSize: "12px" }}

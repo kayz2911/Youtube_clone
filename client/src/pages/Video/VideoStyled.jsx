@@ -11,12 +11,6 @@ export const Content = styled.div`
 
 export const VideoWrapper = styled.div``;
 
-export const VideoFrame = styled.video`
-  max-height: 720px;
-  width: 100%;
-  object-fit: cover;
-`;
-
 export const Title = styled.h1`
   font-size: 18px;
   font-weight: 400;

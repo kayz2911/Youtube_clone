@@ -18,12 +18,8 @@ export const videoListTypes = {
 
 const backendApi = {
   //User
-  registerUser(username, email, password) {
-    return axiosPrivateClient.post(endpoint.register, {
-      username: username,
-      email: email,
-      password: password,
-    });
+  registerUser(params) {
+    return axiosPrivateClient.post(endpoint.register, params);
   },
 
   loginUser: (email, password) => {
@@ -35,7 +31,9 @@ const backendApi = {
   },
 
   resetPassword: (token, newPassword) => {
-    return axiosPrivateClient.post(endpoint.resetPassword + token, { newPassword });
+    return axiosPrivateClient.post(endpoint.resetPassword + token, {
+      newPassword,
+    });
   },
 
   logoutUser: () => {
@@ -111,7 +109,13 @@ const backendApi = {
     return videos;
   },
 
-  //Comment 
+  addVideo: async (params) => {
+    const path = `/videos/createVideo`;
+    const video = await axiosClient.post(path, params);
+    return video;
+  },
+
+  //Comment
   getAllComments: async (videoId) => {
     const path = `/comments/${videoId}`;
     const comments = await axiosClient.get(path);

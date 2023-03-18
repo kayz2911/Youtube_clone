@@ -88,7 +88,7 @@ const Navbar = () => {
       {showUploadVideoModal ? (
         <UploadModal setShowUploadVideoModal={setShowUploadVideoModal} />
       ) : (
-        ""
+        null
       )}
     </>
   );

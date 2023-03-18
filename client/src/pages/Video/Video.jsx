@@ -113,6 +113,7 @@ const Video = () => {
               title="YouTube video player"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
+              style={{ border: "none" }}
             ></iframe>
           </VideoWrapper>
           <Title>{currentVideo.title}</Title>

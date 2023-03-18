@@ -61,3 +61,7 @@ export const Helpers = styled.div`
 export const Helper = styled.span`
   margin-left: 30px;
 `;
+
+export const Label = styled.label`
+  font-size: 14px;
+`;
