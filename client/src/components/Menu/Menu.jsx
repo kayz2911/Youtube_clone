@@ -15,8 +15,8 @@ import Youtube from "../../assets/img/logo.png";
 import HomeIcon from "@mui/icons-material/Home";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import SubscriptionsOutlinedIcon from "@mui/icons-material/SubscriptionsOutlined";
-import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
-import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
+import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
+import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import LibraryMusicOutlinedIcon from "@mui/icons-material/LibraryMusicOutlined";
 import SportsEsportsOutlinedIcon from "@mui/icons-material/SportsEsportsOutlined";
 import SportsBasketballOutlinedIcon from "@mui/icons-material/SportsBasketballOutlined";
@@ -71,14 +71,21 @@ const Menu = (props) => {
           </Item>
         </Link>
         <Hr />
-        <Item>
-          <VideoLibraryOutlinedIcon />
-          Library
-        </Item>
-        <Item>
-          <HistoryOutlinedIcon />
-          History
-        </Item>
+        <Link
+          to="likedVideo"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
+            <ThumbUpOutlinedIcon />
+            Liked videos
+          </Item>
+        </Link>
+        <Link to="myVideo" style={{ textDecoration: "none", color: "inherit" }}>
+          <Item>
+            <PermIdentityIcon />
+            Your videos
+          </Item>
+        </Link>
         {!currentUser && (
           <>
             <Hr />

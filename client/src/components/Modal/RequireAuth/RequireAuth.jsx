@@ -16,7 +16,7 @@ const RequireAuth = (props) => {
   const navigate = useNavigate();
   const path = useLocation();
   const currentUser = useSelector((state) => state.user);
-  const pathMustRequireAuth = ["/subscribeVideo"];
+  const pathMustRequireAuth = ["/subscribeVideo", "/myVideo", "/likedVideo"];
 
   if (!currentUser.currentUser?.accessToken) {
     return (
@@ -24,9 +24,7 @@ const RequireAuth = (props) => {
         <Wrapper>
           <Title>
             Authentication
-            {pathMustRequireAuth.includes(path.pathname) ? (
-              null
-            ) : (
+            {pathMustRequireAuth.includes(path.pathname) ? null : (
               <Close
                 onClick={() =>
                   props.setShowRequireAuthModal
@@ -39,12 +37,10 @@ const RequireAuth = (props) => {
             )}
           </Title>
           <Hr />
-          <Content>You need to sign in to subscribe channel</Content>
+          <Content>You need to sign in</Content>
           <Hr />
           <Footer>
-            {pathMustRequireAuth.includes(path.pathname) ? (
-              null
-            ) : (
+            {pathMustRequireAuth.includes(path.pathname) ? null : (
               <ButtonCancel
                 onClick={() =>
                   props.setShowRequireAuthModal

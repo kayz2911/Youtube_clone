@@ -33,6 +33,20 @@ router.get(
   videoController.subscribeVideo
 );
 
+//Get my video
+router.get(
+  "/myVideo",
+  authorizerService.verifyAccessToken,
+  videoController.myVideo
+);
+
+//Get liked video
+router.get(
+  "/likedVideo",
+  authorizerService.verifyAccessToken,
+  videoController.likedVideo
+);
+
 //Add view
 router.get(
   "/view/:id",

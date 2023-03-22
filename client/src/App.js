@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { ThemeProvider } from "styled-components";
 import { Container, Main, Wrapper } from "./AppStyled";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -7,16 +7,23 @@ import Menu from "./components/Menu/Menu";
 import Navbar from "./components/Navbar/Navbar";
 import { darkTheme, lightTheme } from "./utils/Theme";
 import Home from "./pages/Home/Home";
-import Login from "./pages/Login/Login";
-import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
-import ResetPassword from "./pages/ForgotPassword/ResetPassword";
-import Register from "./pages/Register/Register";
-import Video from "./pages/Video/Video";
-import Search from "./pages/Search/Search";
-import VideoCategory from "./pages/VideoCategory/VideoCategory";
 import PersistLogin from "./components/auth/PersistLogin";
 import RequireAuth from "./components/Modal/RequireAuth/RequireAuth";
 import PageNotFound from "./components/HandleError/PageNotFound";
+
+const Login = React.lazy(() => import("./pages/Login/Login"));
+const ForgotPassword = React.lazy(() =>
+  import("./pages/ForgotPassword/ForgotPassword")
+);
+const ResetPassword = React.lazy(() =>
+  import("./pages/ForgotPassword/ResetPassword")
+);
+const Register = React.lazy(() => import("./pages/Register/Register"));
+const Video = React.lazy(() => import("./pages/Video/Video"));
+const Search = React.lazy(() => import("./pages/Search/Search"));
+const VideoCategory = React.lazy(() =>
+  import("./pages/VideoCategory/VideoCategory")
+);
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -32,22 +39,69 @@ function App() {
               <Routes>
                 <Route path="/">
                   <Route element={<PersistLogin />}>
-                    <Route path="login" element={<Login />} />
-                    <Route path="forgot_password" element={<ForgotPassword />} />
-                    <Route path="reset_password" element={<ResetPassword />} />
-                    <Route path="register" element={<Register />} />
+                    <Route
+                      path="login"
+                      element={
+                        <Suspense>
+                          <Login />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="forgot_password"
+                      element={
+                        <Suspense>
+                          <ForgotPassword />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="reset_password"
+                      element={
+                        <Suspense>
+                          <ResetPassword />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="register"
+                      element={
+                        <Suspense>
+                          <Register />
+                        </Suspense>
+                      }
+                    />
                     <Route index element={<Home type="random" />} />
                     <Route path="trending" element={<Home type="trending" />} />
                     <Route path="search" element={<Search />} />
                     <Route element={<RequireAuth />}>
                       <Route
                         path="subscribeVideo"
-                        element={<Home type="subscribeVideo"/>}
+                        element={<Home type="subscribeVideo" />}
+                      />
+                      <Route path="myVideo" element={<Home type="myVideo" />} />
+                      <Route
+                        path="likedVideo"
+                        element={<Home type="likedVideo" />}
                       />
                     </Route>
                     <Route path="video/">
-                      <Route path="tags/:type" element={<VideoCategory />} />
-                      <Route path=":id" element={<Video />} />
+                      <Route
+                        path="tags/:type"
+                        element={
+                          <Suspense>
+                            <VideoCategory />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path=":id"
+                        element={
+                          <Suspense>
+                            <Video />
+                          </Suspense>
+                        }
+                      />
                     </Route>
                     <Route path="*" element={<PageNotFound />} />
                   </Route>

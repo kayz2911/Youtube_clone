@@ -18,7 +18,7 @@ import UploadModal from "../Modal/UploadVideo/UploadModal";
 
 const Navbar = () => {
   const [query, setQuery] = useState("");
-  const [showOption, setShowOption] = useState(false);
+  const [showOptionBox, setShowOptionBox] = useState(false);
   const [showUploadVideoModal, setShowUploadVideoModal] = useState(false);
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
@@ -54,7 +54,10 @@ const Navbar = () => {
       <Container>
         <Wrapper>
           <Search>
-            <Input placeholder="Search" onChange={(e) => setQuery(e.target.value)} />
+            <Input
+              placeholder="Search"
+              onChange={(e) => setQuery(e.target.value)}
+            />
             <SearchOutlinedIcon
               onClick={goToSearch}
               onMouseOver={hoverIconHandler}
@@ -66,11 +69,17 @@ const Navbar = () => {
                 onClick={() => setShowUploadVideoModal(true)}
                 onMouseOver={hoverIconHandler}
               />
-              {showOption ? <OptionBox /> : ""}
+              {showOptionBox ? (
+                <OptionBox
+                  hideOptionBox={() => {
+                    setShowOptionBox(false);
+                  }}
+                />
+              ) : null}
               <Avatar
                 src={currentUser.img}
                 onClick={() => {
-                  setShowOption(!showOption);
+                  setShowOptionBox(!showOptionBox);
                 }}
                 onMouseOver={hoverIconHandler}
               />
@@ -87,9 +96,7 @@ const Navbar = () => {
       </Container>
       {showUploadVideoModal ? (
         <UploadModal setShowUploadVideoModal={setShowUploadVideoModal} />
-      ) : (
-        null
-      )}
+      ) : null}
     </>
   );
 };

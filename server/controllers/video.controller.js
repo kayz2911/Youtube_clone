@@ -104,6 +104,70 @@ async function subscribeVideo(req, res, next) {
   }
 }
 
+async function myVideo(req, res, next) {
+  try {
+    const page = req.query.page;
+    const [videos] = await Video.aggregate([
+      {
+        $match: { userId: req.user.id },
+      },
+      {
+        $facet: {
+          docs: [
+            { $skip: DEFAULT_PAGE_SIZE * (page - 1) },
+            { $limit: DEFAULT_PAGE_SIZE },
+          ],
+          meta: [{ $count: "total_documents" }],
+        },
+      },
+      { $unwind: "$meta" },
+    ]);
+    const totalDocs = videos?.meta.total_documents || 0;
+    const output = {
+      docs: videos?.docs || [],
+      page: page,
+      pageSize: DEFAULT_PAGE_SIZE,
+      total_pages: Math.ceil(totalDocs / DEFAULT_PAGE_SIZE),
+      total_documents: totalDocs,
+    };
+    res.status(200).json(output);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function likedVideo(req, res, next) {
+  try {
+    const page = req.query.page;
+    const [videos] = await Video.aggregate([
+      {
+        $match: { likes: req.user.id },
+      },
+      {
+        $facet: {
+          docs: [
+            { $skip: DEFAULT_PAGE_SIZE * (page - 1) },
+            { $limit: DEFAULT_PAGE_SIZE },
+          ],
+          meta: [{ $count: "total_documents" }],
+        },
+      },
+      { $unwind: "$meta" },
+    ]);
+    const totalDocs = videos?.meta.total_documents || 0;
+    const output = {
+      docs: videos?.docs || [],
+      page: page,
+      pageSize: DEFAULT_PAGE_SIZE,
+      total_pages: Math.ceil(totalDocs / DEFAULT_PAGE_SIZE),
+      total_documents: totalDocs,
+    };
+    res.status(200).json(output);
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function addVideo(req, res, next) {
   const newVideo = new Video({ userId: req.user.id, ...req.body });
   try {
@@ -255,6 +319,8 @@ module.exports = {
   trendingVideo,
   randomVideo,
   subscribeVideo,
+  myVideo,
+  likedVideo,
   addVideo,
   updateVideo,
   deleteVideo,
