@@ -122,7 +122,7 @@ const UploadModal = (props) => {
     }
 
     await uploadVideoFirebase(video, "videos/");
-    await uploadImgFirebase(img, "images/videoImg");
+    await uploadImgFirebase(img, "images/videoImg/");
   };
 
   useEffect(() => {

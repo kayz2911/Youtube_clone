@@ -7,16 +7,29 @@ const useRefreshToken = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
 
   const refresh = async (withUserInfo = false) => {
-    const { accessToken } = (await backendApi.refreshToken()).data;
-    if (withUserInfo) {
-      const { data } = await backendApi.refetchUserDetail(accessToken);
-      dispatch(userActions.loginSuccess({ ...data, accessToken }));
-    } else {
-      if (currentUser) currentUser.accessToken = accessToken;
-      dispatch(userActions.loginSuccess(currentUser));
-    }
+    try {
+      const { accessToken } = (await backendApi.refreshToken()).data;
+      if (withUserInfo) {
+        const { data } = await backendApi.refetchUserDetail(accessToken);
+        dispatch(userActions.loginSuccess({ ...data, accessToken }));
+      } else {
+        if (currentUser) {
+          dispatch(
+            userActions.loginSuccess({
+              ...currentUser,
+              accessToken: accessToken,
+            })
+          );
+        }
+      }
 
-    return accessToken;
+      return accessToken;
+    } catch (error) {
+      if(error.response.status === 401) {
+        dispatch(userActions.logout());
+        return null;
+      }
+    }
   };
 
   return refresh;

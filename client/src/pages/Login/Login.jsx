@@ -65,7 +65,7 @@ const Login = () => {
   };
 
   const refreshMessage = () => {
-    dispatch(userActions.logout());
+    dispatch(userActions.persistLogin());
   };
 
   return (
