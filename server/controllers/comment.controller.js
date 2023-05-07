@@ -4,7 +4,12 @@ const Comment = require("../models/Comment.model");
 const { errorResponse } = require("../configs/route.config");
 
 async function addComment(req, res, next) {
-  const newComment = new Comment({ ...req.body, userId: req.user.id, videoId: req.params.videoId });
+  const newComment = new Comment({
+    ...req.body,
+    userId: req.user.id,
+    videoId: req.params.videoId,
+  });
+
   try {
     const savedComment = await newComment.save();
     res.status(201).json(savedComment);
@@ -17,11 +22,11 @@ async function deleteComment(req, res, next) {
   try {
     const comment = await Comment.findById(req.params.id);
     const video = await Video.findById(req.params.id);
-    if(req.user.id === comment.userId || req.user.id === video.userId) {
-        await Comment.deleteById(req.params.id);
-        res.status(204).json("The comment has been deleted");
+    if (req.user.id === comment.userId || req.user.id === video.userId) {
+      await Comment.findByIdAndDelete(req.params.id);
+      res.status(204).json("The comment has been deleted");
     } else {
-        return res.status(403).send("You can delete only your comment");
+      return res.status(403).send("You can delete only your comment");
     }
   } catch (error) {
     next(error);
@@ -30,7 +35,9 @@ async function deleteComment(req, res, next) {
 
 async function getAllComments(req, res, next) {
   try {
-    const comments = await Comment.find({videoId: req.params.videoId}).sort({createdAt: -1});
+    const comments = await Comment.find({ videoId: req.params.videoId }).sort({
+      createdAt: -1,
+    });
     res.status(200).json(comments);
   } catch (error) {
     next(error);

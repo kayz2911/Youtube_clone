@@ -5,8 +5,20 @@ const videoRoutes = require("./routes/video.route");
 const commentRoutes = require("./routes/comment.route");
 const authRoutes = require("./routes/auth.route");
 const errorHandler = require("./middlewares/errorHandler");
+const { loadModel } = require("./services/classifyToxicComments.service");
 
 const app = express();
+
+const modelVerifyToxicComment = async () => {
+  try {
+    const model = await loadModel();
+    app.locals.toxicityModel = model;
+  } catch (err) {
+    console.error('Error loading model:', err);
+  }
+};
+
+modelVerifyToxicComment();
 
 app.use(
   cors({

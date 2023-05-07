@@ -128,6 +128,11 @@ const backendApi = {
     return comment;
   },
 
+  deleteComment: async (commentId) => {
+    const path = `comments/${commentId}`;
+    return await axiosClient.delete(path);
+  },
+
   interceptors: axiosClient.interceptors,
 
   axiosPrivateClient: axiosPrivateClient,

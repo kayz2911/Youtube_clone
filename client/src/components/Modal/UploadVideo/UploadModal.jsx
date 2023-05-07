@@ -64,7 +64,21 @@ const UploadModal = (props) => {
   };
 
   const handleVideoFileChange = (e) => {
-    setVideo(e.target.files[0]);
+    const maxSize = 50 * 1024 * 1024; // 10MB
+    const minWidth = 795;
+    const file = e.target.files[0];
+    if (file.size > maxSize) {
+      setVideo(null);
+    }
+    const video = document.createElement("video");
+    video.src = URL.createObjectURL(file);
+    video.onloadedmetadata = () => {
+      if (video.videoWidth < minWidth) {
+        setVideo(null);
+      }else {
+        setVideo(e.target.files[0]);
+      }
+    }
   };
 
   const handleTagChange = (event) => {

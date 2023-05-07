@@ -33,20 +33,6 @@ const Comments = (props) => {
     setShowAddCommentBtn(e.target.value !== "" ? true : false);
   };
 
-  const addComment = showAddCommentBtn ? (
-    <AddCommentField
-      videoId={props.videoId}
-      comments={comments}
-      desc={commentDesc}
-      onCancelComment={() => {
-        setCommentDesc("");
-        setShowAddCommentBtn(false);
-      }}
-    />
-  ) : (
-    ""
-  );
-
   return (
     <Container>
       {currentUser ? (
@@ -57,7 +43,17 @@ const Comments = (props) => {
             value={commentDesc}
             onInput={changeValueHandler}
           />
-          {addComment}
+          {showAddCommentBtn ? (
+            <AddCommentField
+              videoId={props.videoId}
+              comments={comments}
+              desc={commentDesc}
+              onCancelComment={() => {
+                setCommentDesc("");
+                setShowAddCommentBtn(false);
+              }}
+            />
+          ) : null}
         </NewComment>
       ) : (
         <Button onClick={() => navigate("/login")}>
@@ -66,7 +62,15 @@ const Comments = (props) => {
         </Button>
       )}
       {comments.map((comment) => (
-        <SingleComment key={comment._id} comment={comment} />
+        <SingleComment
+          key={comment._id}
+          comment={comment}
+          deleteComment={() => {
+            setComments((prev) =>
+              prev.filter((cmt) => cmt._id !== comment._id)
+            );
+          }}
+        />
       ))}
     </Container>
   );

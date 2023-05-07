@@ -20,10 +20,6 @@ const useBackendApi = () => {
     const responseInterceptor = backendApi.interceptors.response.use(
       (response) => response,
       async (error) => {
-        if (error.response?.status === 401) {
-          return;
-        }
-
         if (error.response?.status === 403) {
           const newToken = await refresh();
           const prevConfig = error.config;
@@ -31,7 +27,7 @@ const useBackendApi = () => {
           // resent prev request
           return backendApi.axiosPrivateClient(prevConfig);
         }
-        Promise.reject(error);
+        return Promise.reject(error);
       }
     );
 

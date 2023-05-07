@@ -1,5 +1,6 @@
 const express = require("express");
 const authorizerService = require("../services/authorizer.service");
+const classifyToxicCommentsService = require("../services/classifyToxicComments.service");
 const commentController = require("../controllers/comment.controller");
 
 const router = express.Router();
@@ -8,6 +9,7 @@ const router = express.Router();
 router.post(
   "/addComment/:videoId",
   authorizerService.verifyAccessToken,
+  classifyToxicCommentsService.predictToxicity,
   commentController.addComment
 );
 

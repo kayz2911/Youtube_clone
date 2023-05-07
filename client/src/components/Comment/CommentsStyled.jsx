@@ -20,8 +20,8 @@ export const Input = styled.input`
   color: ${({ theme }) => theme.text};
   background-color: transparent;
   outline: none;
-  padding: 5px;
-  width: 100%;
+  padding: 5px 5px 5px 0;
+  width: 70%;
 `;
 
 export const Button = styled.button`
