@@ -24,6 +24,7 @@ const Search = React.lazy(() => import("./pages/Search/Search"));
 const VideoCategory = React.lazy(() =>
   import("./pages/VideoCategory/VideoCategory")
 );
+const Feedback = React.lazy(() => import("./pages/Feedback/Feedback"));
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -99,6 +100,16 @@ function App() {
                         element={
                           <Suspense>
                             <Video />
+                          </Suspense>
+                        }
+                      />
+                    </Route>
+                    <Route element={<RequireAuth />}>
+                      <Route
+                        path="sendFeedBack"
+                        element={
+                          <Suspense>
+                            <Feedback />
                           </Suspense>
                         }
                       />

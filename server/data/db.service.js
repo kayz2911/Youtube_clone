@@ -86,7 +86,7 @@ const updateUserId = async () => {
 async function test() {
   await mongoService.connect("youtube_clone");
 
-  await loadVideos("JHSRTU31T14");
+  await loadVideos("niPkap1ozUA");
   await updateUserId();
 
   await mongoService.disconnect();

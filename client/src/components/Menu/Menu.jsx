@@ -155,10 +155,15 @@ const Menu = (props) => {
           <SettingsOutlinedIcon />
           Setting
         </Item>
-        <Item>
-          <FlagOutlinedIcon />
-          Report
-        </Item>
+        <Link
+          to="sendFeedback"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item>
+            <FlagOutlinedIcon />
+            Report
+          </Item>
+        </Link>
         <Item>
           <HelpOutlinedIcon />
           Help

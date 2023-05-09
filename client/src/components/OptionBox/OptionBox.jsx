@@ -69,10 +69,15 @@ const OptionBox = (props) => {
           <HelpOutlinedIcon />
           Help
         </Item>
-        <Item>
-          <FeedbackOutlinedIcon />
-          Send feedback
-        </Item>
+        <Link
+          to="sendFeedback"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          <Item onClick={hideOptionBox}>
+            <FeedbackOutlinedIcon />
+            Send feedback
+          </Item>
+        </Link>
       </Wrapper>
     </Container>
   );

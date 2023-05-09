@@ -28,11 +28,6 @@ const ForgotPassword = () => {
     reset: resetEmail,
   } = useInput(isEmailValid);
 
-  let formIsValid = false;
-  if (emailIsValid) {
-    formIsValid = true;
-  }
-
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     if (!emailIsValid) {
@@ -65,7 +60,7 @@ const ForgotPassword = () => {
         />
         {emailHasError ? <p>Email is invalid</p> : null}
         {errorMessage ? errorMessage : null}
-        <Button onClick={handleForgotPassword} disabled={!formIsValid}>
+        <Button onClick={handleForgotPassword} disabled={!emailIsValid}>
           Send mail
         </Button>
         <Link

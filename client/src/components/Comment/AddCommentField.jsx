@@ -13,7 +13,6 @@ const AddCommentField = (props) => {
   const addCommentHandler = async () => {
     try {
       const res = await backendApi.addComment(props.videoId, props.desc);
-      console.log(res);
       if (res?.status === 201) {
         props.comments.splice(0, 0, res.data);
       }
