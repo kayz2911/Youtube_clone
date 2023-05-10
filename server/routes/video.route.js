@@ -79,7 +79,6 @@ router.put(
 //Delete Video
 router.delete(
   "/:id",
-  authorizerService.verifyAccessToken,
   videoController.deleteVideo
 );
 

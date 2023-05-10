@@ -14,13 +14,21 @@ const Search = () => {
   const path = useLocation();
 
   useEffect(() => {
+    setPage(1);
+  }, [path.search]);
+
+  useEffect(() => {
     const fetchVideo = async () => {
       try {
         if (path.search.startsWith("?q=")) {
           const videoData = await (
             await backendApi.searchVideos(path.search, page)
           ).data;
-          setVideos((video) => [...video, ...videoData.docs]);
+          if (page === 1) {
+            setVideos(videoData.docs);
+          } else {
+            setVideos((video) => [...video, ...videoData.docs]);
+          }
           setTotalPage(videoData.total_pages);
         }
       } catch (error) {

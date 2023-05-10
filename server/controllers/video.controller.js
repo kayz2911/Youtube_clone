@@ -207,18 +207,13 @@ async function updateVideo(req, res, next) {
 
 async function deleteVideo(req, res, next) {
   try {
-    const video = await Video.findById(req.params.id);
+    const video = await Video.findByIdAndDelete(req.params.id);
 
     if (!video) {
       return res.status(404).send(errorResponse.DEFAULT_404_ERROR);
     }
 
-    if (req.user.id === updatedVideo.userId) {
-      await Video.findByIdAndDelete(req.params.id);
-      res.status(200).json("The video has been deleted");
-    } else {
-      return res.status(403).send("You can delete only your video");
-    }
+    res.status(200).json("The video has been deleted");
   } catch (error) {
     next(error);
   }

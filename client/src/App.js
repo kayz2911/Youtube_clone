@@ -37,87 +37,52 @@ function App() {
           <Main>
             <Navbar />
             <Wrapper>
-              <Routes>
-                <Route path="/">
-                  <Route element={<PersistLogin />}>
-                    <Route
-                      path="login"
-                      element={
-                        <Suspense>
-                          <Login />
-                        </Suspense>
-                      }
-                    />
-                    <Route
-                      path="forgot_password"
-                      element={
-                        <Suspense>
-                          <ForgotPassword />
-                        </Suspense>
-                      }
-                    />
-                    <Route
-                      path="reset_password"
-                      element={
-                        <Suspense>
-                          <ResetPassword />
-                        </Suspense>
-                      }
-                    />
-                    <Route
-                      path="register"
-                      element={
-                        <Suspense>
-                          <Register />
-                        </Suspense>
-                      }
-                    />
-                    <Route index element={<Home type="random" />} />
-                    <Route path="trending" element={<Home type="trending" />} />
-                    <Route path="search" element={<Search />} />
-                    <Route element={<RequireAuth />}>
+              <Suspense>
+                <Routes>
+                  <Route path="/">
+                    <Route element={<PersistLogin />}>
+                      <Route path="login" element={<Login />} />
                       <Route
-                        path="subscribeVideo"
-                        element={<Home type="subscribeVideo" />}
+                        path="forgot_password"
+                        element={<ForgotPassword />}
                       />
-                      <Route path="myVideo" element={<Home type="myVideo" />} />
                       <Route
-                        path="likedVideo"
-                        element={<Home type="likedVideo" />}
+                        path="reset_password"
+                        element={<ResetPassword />}
                       />
+                      <Route path="register" element={<Register />} />
+                      <Route index element={<Home type="random" />} />
+                      <Route
+                        path="trending"
+                        element={<Home type="trending" />}
+                      />
+                      <Route path="search" element={<Search />} />
+                      <Route element={<RequireAuth />}>
+                        <Route
+                          path="subscribeVideo"
+                          element={<Home type="subscribeVideo" />}
+                        />
+                        <Route
+                          path="myVideo"
+                          element={<Home type="myVideo" />}
+                        />
+                        <Route
+                          path="likedVideo"
+                          element={<Home type="likedVideo" />}
+                        />
+                      </Route>
+                      <Route path="video/">
+                        <Route path="tags/:type" element={<VideoCategory />} />
+                        <Route path=":id" element={<Video />} />
+                      </Route>
+                      <Route element={<RequireAuth />}>
+                        <Route path="sendFeedBack" element={<Feedback />} />
+                      </Route>
+                      <Route path="*" element={<PageNotFound />} />
                     </Route>
-                    <Route path="video/">
-                      <Route
-                        path="tags/:type"
-                        element={
-                          <Suspense>
-                            <VideoCategory />
-                          </Suspense>
-                        }
-                      />
-                      <Route
-                        path=":id"
-                        element={
-                          <Suspense>
-                            <Video />
-                          </Suspense>
-                        }
-                      />
-                    </Route>
-                    <Route element={<RequireAuth />}>
-                      <Route
-                        path="sendFeedBack"
-                        element={
-                          <Suspense>
-                            <Feedback />
-                          </Suspense>
-                        }
-                      />
-                    </Route>
-                    <Route path="*" element={<PageNotFound />} />
                   </Route>
-                </Route>
-              </Routes>
+                </Routes>
+              </Suspense>
             </Wrapper>
           </Main>
         </BrowserRouter>

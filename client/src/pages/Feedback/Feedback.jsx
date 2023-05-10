@@ -6,9 +6,6 @@ import {
   Title,
   InputFeedback,
   Button,
-  More,
-  Helpers,
-  Helper,
 } from "./FeedbackStyled";
 import Cookies from "js-cookie";
 import useInput from "../../hooks/useInput";
@@ -78,14 +75,6 @@ const Feedback = () => {
           Send
         </Button>
       </Wrapper>
-      <More>
-        English(USA)
-        <Helpers>
-          <Helper>Help</Helper>
-          <Helper>Privacy</Helper>
-          <Helper>Terms</Helper>
-        </Helpers>
-      </More>
     </Container>
   );
 };
