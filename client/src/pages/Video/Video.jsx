@@ -34,11 +34,13 @@ import { videoActions } from "../../store/videoSlice";
 import useBackendApi from "../../hooks/useBackendApi";
 import moment from "moment";
 import RequireAuth from "../../components/Modal/RequireAuth/RequireAuth";
+import useUnderDevelopment from "../../hooks/useUnderDevelopment";
 
 const Video = () => {
   const backendApi = useBackendApi();
   const { currentUser } = useSelector((state) => state.user);
   const { currentVideo } = useSelector((state) => state.video);
+  const underDevelop = useUnderDevelopment();
   const [channel, setChannel] = useState({});
   const [showRequireAuthModal, setShowRequireAuthModal] = useState(false);
   const dispatch = useDispatch();
@@ -143,10 +145,10 @@ const Video = () => {
                   )}
                   {currentVideo.dislikes?.length}
                 </Button>
-                <Button>
+                <Button onClick={underDevelop}>
                   <ReplyOutlinedIcon /> Share
                 </Button>
-                <Button>
+                <Button onClick={underDevelop}>
                   <AddTaskOutlinedIcon /> Save
                 </Button>
               </Button>
