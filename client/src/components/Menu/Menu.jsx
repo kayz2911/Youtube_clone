@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   Container,
   Wrapper,
@@ -28,10 +29,11 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import HelpOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
-import { useSelector } from "react-redux";
+import useUnderDevelopment from "../../hooks/useUnderDevelopment";
 
 const Menu = (props) => {
   const { currentUser } = useSelector((state) => state.user);
+  const underDevelop = useUnderDevelopment();
 
   const changeDarkModeHandler = () => {
     props.setDarkMode(!props.darkMode);
@@ -146,17 +148,17 @@ const Menu = (props) => {
             News
           </Item>
         </Link>
-        <Item>
+        <Item onClick={underDevelop}>
           <LiveTvOutlinedIcon />
           Live
         </Item>
         <Hr />
-        <Item>
+        <Item onClick={underDevelop}>
           <SettingsOutlinedIcon />
           Setting
         </Item>
         <Link
-          to="sendFeedback"
+          to="report"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <Item>
@@ -164,7 +166,7 @@ const Menu = (props) => {
             Report
           </Item>
         </Link>
-        <Item>
+        <Item onClick={underDevelop}>
           <HelpOutlinedIcon />
           Help
         </Item>

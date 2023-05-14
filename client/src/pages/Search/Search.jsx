@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import { Container } from "./SearchStyled";
 import InfiniteScroll from "../../components/InfiniteScroll/InfiniteScroll";
 import useBackendApi from "../../hooks/useBackendApi";
+import LoadingSpinner from "../../components/Loading/LoadingSpinner";
+import ItemNotFound from "../../components/HandleError/ItemNotFound";
 import CardLoader from "../../components/Card/CardLoader";
 const Card = React.lazy(() => import("../../components/Card/Card"));
 
@@ -11,9 +13,11 @@ const Search = () => {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
   const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const path = useLocation();
 
   useEffect(() => {
+    setLoading(true);
     setPage(1);
   }, [path.search]);
 
@@ -33,24 +37,36 @@ const Search = () => {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchVideo();
   }, [backendApi, path.search, page]);
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
-    <InfiniteScroll
-      fetchMore={() => setPage((prev) => prev + 1)}
-      hasMore={page < totalPage}
-    >
-      <Container>
-        {videos.map((video, i) => (
-          <Suspense key={i} fallback={<CardLoader />}>
-            <Card key={video._id} video={video} />
-          </Suspense>
-        ))}
-      </Container>
-    </InfiniteScroll>
+    <>
+      {videos.length === 0 ? (
+        <ItemNotFound />
+      ) : (
+        <InfiniteScroll
+          fetchMore={() => setPage((prev) => prev + 1)}
+          hasMore={page < totalPage}
+        >
+          <Container>
+            {videos.map((video, i) => (
+              <Suspense key={i} fallback={<CardLoader />}>
+                <Card key={video._id} video={video} />
+              </Suspense>
+            ))}
+          </Container>
+        </InfiniteScroll>
+      )}
+    </>
   );
 };
 

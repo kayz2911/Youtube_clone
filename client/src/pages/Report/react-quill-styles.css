@@ -1,0 +1,9 @@
+.react-quill-class {
+  height: 250px;
+  padding: 10px;
+  width: 100%;
+}
+
+.react-quill-class .ql-container {
+  position: unset;
+}

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { Container } from "./HomeStyled";
 import useBackendApi from "../../hooks/useBackendApi";
+import LoadingSpinner from "../../components/Loading/LoadingSpinner";
+import ItemNotFound from "../../components/HandleError/ItemNotFound";
 import InfiniteScroll from "../../components/InfiniteScroll/InfiniteScroll";
 import CardLoader from "../../components/Card/CardLoader";
 const Card = React.lazy(() => import("../../components/Card/Card"));
@@ -10,6 +12,7 @@ const Home = (props) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [type, setType] = useState(props.type);
 
   useEffect(() => {
@@ -20,6 +23,8 @@ const Home = (props) => {
         setTotalPages(data.total_pages);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     loadVideos(page);
@@ -29,21 +34,32 @@ const Home = (props) => {
     setType(props.type);
     setVideos([]);
     setPage(1);
+    setLoading(true);
   }, [props.type]);
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
-    <InfiniteScroll
-      fetchMore={() => setPage((prev) => prev + 1)}
-      hasMore={page < totalPages}
-    >
-      <Container>
-        {videos.map((video, index) => (
-          <Suspense key={index} fallback={<CardLoader />}>
-            <Card video={video} />
-          </Suspense>
-        ))}
-      </Container>
-    </InfiniteScroll>
+    <>
+      {videos.length === 0 ? (
+        <ItemNotFound />
+      ) : (
+        <InfiniteScroll
+          fetchMore={() => setPage((prev) => prev + 1)}
+          hasMore={page < totalPages}
+        >
+          <Container>
+            {videos.map((video, index) => (
+              <Suspense key={index} fallback={<CardLoader />}>
+                <Card video={video} />
+              </Suspense>
+            ))}
+          </Container>
+        </InfiniteScroll>
+      )}
+    </>
   );
 };
 

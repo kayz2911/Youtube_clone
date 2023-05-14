@@ -1,12 +1,12 @@
 import React from "react";
 import { Container, ErrorContent } from "./ErrorStyled";
 
-const Loading = () => {
+const ItemNotFound = () => {
   return (
     <Container>
-      <ErrorContent>Loading...</ErrorContent>
+      <ErrorContent>Item Not Found</ErrorContent>
     </Container>
   );
 };
 
-export default Loading;
+export default ItemNotFound;

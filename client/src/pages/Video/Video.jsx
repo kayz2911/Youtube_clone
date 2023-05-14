@@ -28,7 +28,7 @@ import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import Recommendation from "../../components/Recommendation/Recommendation";
 import Comments from "../../components/Comment/Comments";
-import Loading from "../../components/HandleError/Loading";
+import LoadingSpinner from "../../components/Loading/LoadingSpinner";
 import { userActions } from "../../store/userSlice";
 import { videoActions } from "../../store/videoSlice";
 import useBackendApi from "../../hooks/useBackendApi";
@@ -197,7 +197,7 @@ const Video = () => {
       )}
     </>
   ) : (
-    <Loading />
+    <LoadingSpinner />
   );
 
   return videoPage;

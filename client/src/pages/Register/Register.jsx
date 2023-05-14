@@ -21,10 +21,12 @@ import {
 import useInput from "../../hooks/useInput";
 import useUploadFile from "../../hooks/useUploadFile";
 import useBackendApi from "../../hooks/useBackendApi";
+import LoadingSpinner from "../../components/Loading/LoadingSpinner";
 
 const Register = () => {
   const backendApi = useBackendApi();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [img, setImg] = useState(null);
 
   const {
@@ -88,6 +90,8 @@ const Register = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }, [
     imgError,
@@ -104,10 +108,14 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (!usernameIsValid || !emailIsValid || !passwordIsValid || !img) {
       return;
     }
-    await uploadImgFirebase(img, "images/channelImg/");
+    await uploadImgFirebase(img, "images/channelImg/").catch((error) => {
+      console.log("Error on uploading image" + error);
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
@@ -116,6 +124,10 @@ const Register = () => {
       registerUser();
     }
   }, [imgSrc, registerUser]);
+
+  if(loading) {
+    return <LoadingSpinner />
+  }
 
   return (
     <Container>

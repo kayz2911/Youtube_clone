@@ -16,7 +16,7 @@ const RequireAuth = (props) => {
   const navigate = useNavigate();
   const path = useLocation();
   const currentUser = useSelector((state) => state.user);
-  const pathMustRequireAuth = ["/subscribeVideo", "/myVideo", "/likedVideo", "/sendFeedback"];
+  const pathMustRequireAuth = ["/subscribeVideo", "/myVideo", "/likedVideo"];
 
   if (!currentUser.currentUser?.accessToken) {
     return (

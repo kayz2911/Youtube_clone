@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import useRefreshToken from "../../hooks/useRefreshToken";
 import { Outlet } from "react-router-dom";
 import { useEffect, useRef } from "react";
-import Loading from "../HandleError/Loading";
+import LoadingSpinner from "../Loading/LoadingSpinner";
 
 const PersistLogin = () => {
   const isFirstTime = useRef(true);
@@ -25,7 +25,7 @@ const PersistLogin = () => {
     };
   }, [currentUser, refresh]);
 
-  return currentUser.loading ? <Loading /> : <Outlet />;
+  return currentUser.loading ? <LoadingSpinner /> : <Outlet />;
 };
 
 export default PersistLogin;

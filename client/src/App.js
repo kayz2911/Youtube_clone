@@ -24,7 +24,7 @@ const Search = React.lazy(() => import("./pages/Search/Search"));
 const VideoCategory = React.lazy(() =>
   import("./pages/VideoCategory/VideoCategory")
 );
-const Feedback = React.lazy(() => import("./pages/Feedback/Feedback"));
+const Report = React.lazy(() => import("./pages/Report/Report"));
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -75,9 +75,7 @@ function App() {
                         <Route path="tags/:type" element={<VideoCategory />} />
                         <Route path=":id" element={<Video />} />
                       </Route>
-                      <Route element={<RequireAuth />}>
-                        <Route path="sendFeedBack" element={<Feedback />} />
-                      </Route>
+                      <Route path="report" element={<Report />} />
                       <Route path="*" element={<PageNotFound />} />
                     </Route>
                   </Route>

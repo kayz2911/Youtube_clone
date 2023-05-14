@@ -13,6 +13,7 @@ import {
   Label,
 } from "./UploadModalStyled";
 import { isNotEmpty } from "../../../validator/Validator";
+import LoadingSpinner from "../../Loading/LoadingSpinner";
 import useInput from "../../../hooks/useInput";
 import useUploadFile from "../../../hooks/useUploadFile";
 import useBackendApi from "../../../hooks/useBackendApi";
@@ -23,6 +24,7 @@ const UploadModal = (props) => {
   const [img, setImg] = useState(null);
   const [video, setVideo] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const {
     value: titleValue,
@@ -113,6 +115,8 @@ const UploadModal = (props) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }, [
     videoError,
@@ -135,8 +139,15 @@ const UploadModal = (props) => {
       return;
     }
 
-    await uploadVideoFirebase(video, "videos/");
-    await uploadImgFirebase(img, "images/videoImg/");
+    setLoading(true);
+    await Promise.all([
+      uploadVideoFirebase(video, "videos/"),
+      uploadImgFirebase(img, "images/videoImg/")
+    ]).catch(error => {
+      console.log("Error upload on firebase");
+      setLoading(false);
+    });
+    
   };
 
   useEffect(() => {
@@ -145,6 +156,10 @@ const UploadModal = (props) => {
       uploadVideo();
     }
   }, [videoSrc, imgSrc, uploadVideo]);
+
+  if(loading) {
+    return <LoadingSpinner />
+  }
 
   return (
     <Container>

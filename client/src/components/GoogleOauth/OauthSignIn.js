@@ -11,7 +11,7 @@ export const OauthSignIn = (params) => {
   var configs = {
     client_id:
       "401220103720-9l4v878v94r3854sbpo3cb15mbdb93ra.apps.googleusercontent.com",
-    redirect_uri: "http://localhost:3000/sendFeedback?oauth_callback=1",
+    redirect_uri: "http://localhost:3000/report?oauth_callback=1",
     scope: "https://www.googleapis.com/auth/gmail.send",
     state: JSON.stringify(params),
     include_granted_scopes: "true",
@@ -32,12 +32,12 @@ export const OauthSignIn = (params) => {
   form.submit();
 };
 
-export const sendMail = (access_token, feedbackValue) => {
+export const sendMail = (access_token, reportValue) => {
   const url = "https://www.googleapis.com/gmail/v1/users/me/messages/send";
   const headers = new Headers();
   headers.append("Authorization", `Bearer ${access_token}`);
   headers.append("Content-Type", "application/json");
-  const message = `From: me\nTo: dohuyhieu2911@gmail.com\nSubject: Feedback\n\nHere is my feedback : ${feedbackValue}`;
+  const message = `From: me\nTo: dohuyhieu2911@gmail.com\nSubject: Report\n\nHere is my report : ${reportValue}`;
   const encodedMessage = btoa(message);
   const data = JSON.stringify({
     raw: encodedMessage,
