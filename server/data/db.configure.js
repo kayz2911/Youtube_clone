@@ -1,6 +1,9 @@
-const BASE_URL = "https://www.googleapis.com/youtube/v3";
-const BASE_VIDEO_URL = "https://www.youtube.com/embed";
-const API_KEY = "AIzaSyAgf8MBxaMtem68gOxY8aKvAeLZeQHdKm8";
+const dotenv = require("dotenv");
+dotenv.config();
+
+const BASE_URL = process.env.BASE_URL;
+const BASE_VIDEO_URL = process.env.BASE_VIDEO_URL;
+const API_KEY = process.env.API_KEY;
 
 module.exports = {
   BASE_URL,

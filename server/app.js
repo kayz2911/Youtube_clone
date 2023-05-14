@@ -6,6 +6,8 @@ const commentRoutes = require("./routes/comment.route");
 const authRoutes = require("./routes/auth.route");
 const errorHandler = require("./middlewares/errorHandler");
 const { loadModel } = require("./services/classifyToxicComments.service");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const app = express();
 
@@ -22,7 +24,7 @@ modelVerifyToxicComment();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_DOMAIN,
     credentials: true,
   })
 );
