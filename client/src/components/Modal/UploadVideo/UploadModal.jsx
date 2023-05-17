@@ -67,7 +67,7 @@ const UploadModal = (props) => {
 
   const handleVideoFileChange = (e) => {
     const maxSize = 50 * 1024 * 1024; // 10MB
-    const minWidth = 795;
+    const minWidth = 650;
     const file = e.target.files[0];
     if (file.size > maxSize) {
       setVideo(null);

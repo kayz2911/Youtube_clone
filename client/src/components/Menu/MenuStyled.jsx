@@ -3,15 +3,14 @@ import styled from "styled-components";
 export const Container = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.bgLighter};
-  height: 100%;
   color: ${({ theme }) => theme.text};
   font-size: 14px;
-  position: sticky;
-  top: 0;
 `;
 
 export const Wrapper = styled.div`
   padding: 18px 15px;
+  position: sticky;
+  top: 0;
 `;
 
 export const Logo = styled.div`
