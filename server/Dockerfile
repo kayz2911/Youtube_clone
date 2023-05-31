@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as a parent image
-FROM node:18.16-alpine
+FROM node:18.16-bullseye-slim
 # Updates the package index inside the image and installs the specified dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends tmux git make g++
 
