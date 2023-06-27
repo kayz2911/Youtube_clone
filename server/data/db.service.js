@@ -3,8 +3,8 @@ const bcrypt = require("bcryptjs");
 const config = require("./db.configure");
 const mongoService = require("../services/mongo.service");
 const helpers = require("../helpers/helpers");
-const Video = require("../models/video.model");
-const User = require("../models/user.model");
+const Video = require("../models/Video.model");
+const User = require("../models/User.model");
 
 const loadUser = async (id) => {
   const mappedModel = (dbModel) => {
