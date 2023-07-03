@@ -1,12 +1,14 @@
 import axios from "axios";
 
+const API_SERVER = process.env.API_SERVER_DOMAIN;
+
 const axiosClient = axios.create({
-    baseURL: 'http://localhost:8800/api',
+    baseURL: API_SERVER,
     timeout: 2500,
 });
 
 export const axiosPrivateClient = axios.create({
-    baseURL: 'http://localhost:8800/api',
+    baseURL: API_SERVER,
     timeout: 2500,
     withCredentials: true,
 });

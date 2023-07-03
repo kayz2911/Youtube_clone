@@ -14,7 +14,7 @@ const loadUser = async (id) => {
       email: `${id}@gmail.com`,
       password: bcrypt.hashSync("123456", bcrypt.genSaltSync(10)),
       img: dbModel.snippet.thumbnails.default.url,
-      subscribers: helpers.getRandomIntInclusive(1000000, 100000000),
+      subscribers: [],
       subscribedUsers: [],
       createdAt: dbModel.snippet.publishedAt,
     };

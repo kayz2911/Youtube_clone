@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   Container,
   Wrapper,
@@ -21,6 +22,7 @@ import useBackendApi from "../../../hooks/useBackendApi";
 const UploadModal = (props) => {
   const backendApi = useBackendApi();
   const navigate = useNavigate();
+  const { socket } = useSelector((state) => state.socket);
   const [img, setImg] = useState(null);
   const [video, setVideo] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -112,6 +114,7 @@ const UploadModal = (props) => {
         resetDesc();
         props.setShowUploadVideoModal(false);
         navigate(`video/${res.data._id}`);
+        socket.emit("uploadVideo");
       }
     } catch (error) {
       console.log(error);
@@ -131,6 +134,7 @@ const UploadModal = (props) => {
     resetDesc,
     props,
     navigate,
+    socket
   ]);
 
   const handleUploadVideo = async (e) => {

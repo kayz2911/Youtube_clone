@@ -14,12 +14,12 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import HelpOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import FeedbackOutlinedIcon from "@mui/icons-material/FeedbackOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
-import { userActions } from "../../store/userSlice";
+import { userActions } from "../../../store/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import useUnderDevelopment from "../../hooks/useUnderDevelopment";
+import useUnderDevelopment from "../../../hooks/useUnderDevelopment";
 
-import useBackendApi from "../../hooks/useBackendApi";
+import useBackendApi from "../../../hooks/useBackendApi";
 
 const OptionBox = (props) => {
   const backendApi = useBackendApi();
@@ -32,6 +32,7 @@ const OptionBox = (props) => {
     try {
       await backendApi.logoutUser();
       dispatch(userActions.logout());
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }

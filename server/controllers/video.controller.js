@@ -1,5 +1,6 @@
 const Video = require("../models/Video.model");
 const User = require("../models/User.model");
+const Notification = require("../models/Notification.model");
 const { errorResponse, DEFAULT_PAGE_SIZE } = require("../configs/route.config");
 
 async function trendingVideo(req, res, next) {
@@ -170,7 +171,17 @@ async function likedVideo(req, res, next) {
 
 async function addVideo(req, res, next) {
   const newVideo = new Video({ userId: req.user.id, ...req.body });
+  const user = await User.findById(req.user.id);
+  const subscribers = user.subscribers;
   try {
+    // Create an array of promises for creating notifications
+    const notificationPromises = subscribers.map((subscriber) =>
+      Notification.create({ userRequestId: req.user.id, userRecipientId: subscriber, typeNoti: 0 })
+    );
+
+    // Wait for all notification promises to resolve
+    await Promise.all(notificationPromises);
+
     const savedVideo = await newVideo.save();
     res.status(201).json(savedVideo);
   } catch (error) {

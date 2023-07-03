@@ -7,9 +7,9 @@ import {
   Footer,
   Button,
   Hr,
-} from "./NotificationStyled";
+} from "./AlertStyled";
 
-const Notification = (props) => {
+const Alert = (props) => {
   return (
     <Container>
       <Wrapper>
@@ -17,8 +17,8 @@ const Notification = (props) => {
           {props.title}
           <Close
             onClick={() =>
-              props.setShowNotification
-                ? props.setShowNotification(false)
+              props.setShowAlert
+                ? props.setShowAlert(false)
                 : null
             }
           >
@@ -31,8 +31,8 @@ const Notification = (props) => {
         <Footer>
           <Button
             onClick={() =>
-              props.setShowNotification
-                ? props.setShowNotification(false)
+              props.setShowAlert
+                ? props.setShowAlert(false)
                 : null
             }
           >
@@ -44,4 +44,4 @@ const Notification = (props) => {
   );
 };
 
-export default Notification;
+export default Alert;

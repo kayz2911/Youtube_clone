@@ -11,17 +11,23 @@ import {
 } from "./NavbarStyled";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import OptionBox from "../OptionBox/OptionBox";
+import OptionBox from "./OptionBox/OptionBox";
+import Notification from "./Notification/Notification";
 import { useSelector } from "react-redux";
 import UploadModal from "../Modal/UploadVideo/UploadModal";
+import useBackendApi from "../../hooks/useBackendApi";
 
 const Navbar = () => {
   const [query, setQuery] = useState("");
   const [showOptionBox, setShowOptionBox] = useState(false);
   const [showUploadVideoModal, setShowUploadVideoModal] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotification, setShowNotification] = useState(false);
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
+  const backendApi = useBackendApi();
 
   const hoverIconHandler = (e) => {
     e.target.style.cursor = "pointer";
@@ -49,6 +55,18 @@ const Navbar = () => {
     };
   }, [query, goToSearch]);
 
+  useEffect(() => {
+    const getAllNotifications = async () => {
+      if (showNotification) {
+        const notifications = await (
+          await backendApi.getAllNotifications()
+        ).data;
+        setNotifications(notifications);
+      }
+    };
+    getAllNotifications();
+  }, [backendApi, showNotification]);
+
   return (
     <>
       <Container>
@@ -69,6 +87,15 @@ const Navbar = () => {
                 onClick={() => setShowUploadVideoModal(true)}
                 onMouseOver={hoverIconHandler}
               />
+              <NotificationsOutlinedIcon
+                onClick={() => {
+                  setShowNotification(!showNotification);
+                }}
+                onMouseOver={hoverIconHandler}
+              />
+              {showNotification ? (
+                <Notification notifications={notifications} />
+              ) : null}
               {showOptionBox ? (
                 <OptionBox
                   hideOptionBox={() => {

@@ -144,7 +144,7 @@ async function handleResetPassword(req, res) {
   sendEmail(
     user.email,
     "Password Reset Confirmation",
-    "Your new password is: " + req.body.newPassword
+    "You have already reset password successfully",
   );
 
   res.status(200).send("Password Reset mail sent");

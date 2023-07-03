@@ -1,12 +1,14 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User.model");
 const Video = require("../models/Video.model");
+const Notification = require("../models/Notification.model");
 
 async function updateUser(req, res, next) {
   if (req.params.id === req.user.id) {
     const salt = bcrypt.genSaltSync(10);
     const dataUserUpdate = req.body;
-    if(req.body.password) {
+    
+    if (req.body.password) {
       const hashPassword = bcrypt.hashSync(req.body.password, salt);
       dataUserUpdate = { ...req.body, password: hashPassword };
     }
@@ -26,14 +28,12 @@ async function updateUser(req, res, next) {
   } else {
     return res.status(403).send({ error: "You can update only your account" });
   }
-};
+}
 
 async function deleteUser(req, res, next) {
   if (req.params.id === req.user.id) {
     try {
-      await User.findByIdAndDelete(
-        req.params.id
-      );
+      await User.findByIdAndDelete(req.params.id);
       return res.status(200).json("User has been deleted");
     } catch (error) {
       next(error);
@@ -41,7 +41,7 @@ async function deleteUser(req, res, next) {
   } else {
     return res.status(403).send({ error: "You can delete only your account" });
   }
-};
+}
 
 async function findUser(req, res, next) {
   try {
@@ -50,7 +50,7 @@ async function findUser(req, res, next) {
   } catch (error) {
     next(error);
   }
-};
+}
 
 async function getUser(req, res, next) {
   try {
@@ -59,67 +59,81 @@ async function getUser(req, res, next) {
   } catch (error) {
     next(error);
   }
-};
+}
 
 async function subscribeUser(req, res, next) {
   try {
-    await User.findByIdAndUpdate(req.user.id, {
-      $push: {subscribedUsers: req.params.id}
+    const updateCurrentUser = User.findByIdAndUpdate(req.user.id, {
+      $push: { subscribedUsers: req.params.id },
     });
 
-    await User.findByIdAndUpdate(req.params.id, {
-      $inc:{subscribers: 1},
-    })
+    const updateTargetUser = User.findByIdAndUpdate(req.params.id, {
+      $push: { subscribers: req.user.id },
+    });
+
+    const createNotification = Notification.create({
+      userRequestId: req.user.id,
+      userRecipientId: req.params.id,
+      typeNoti: 1,
+    });
+
+    await Promise.all([
+      updateCurrentUser,
+      updateTargetUser,
+      createNotification,
+    ]);
 
     res.status(200).json("subscribe successful");
   } catch (error) {
     next(error);
   }
-};
+}
 
 async function unsubscribeUser(req, res, next) {
   try {
-    await User.findByIdAndUpdate(req.user.id, {
-      $pull: {subscribedUsers: req.params.id}
+    const updateCurrentUser = User.findByIdAndUpdate(req.user.id, {
+      $pull: { subscribedUsers: req.params.id },
     });
 
-    await User.findByIdAndUpdate(req.params.id, {
-      $inc:{subscribers: -1},
-    })
+    const updateTargetUser = User.findByIdAndUpdate(req.params.id, {
+      $pull: { subscribers: req.user.id },
+    });
+
+    await Promise.all([updateCurrentUser, updateTargetUser]);
 
     res.status(200).json("Unsubscribe successful");
   } catch (error) {
     next(error);
   }
-};
+}
 
 async function likeVideo(req, res, next) {
   const userId = req.user.id;
   const videoId = req.params.videoId;
   try {
     await Video.findByIdAndUpdate(videoId, {
-      $addToSet: {likes: userId},
-      $pull: {dislikes: userId}
+      $addToSet: { likes: userId },
+      $pull: { dislikes: userId },
     });
     res.status(200).send("The video has been liked");
   } catch (error) {
     next(error);
   }
-};
+}
 
 async function dislikeVideo(req, res, next) {
   const userId = req.user.id;
   const videoId = req.params.videoId;
   try {
     await Video.findByIdAndUpdate(videoId, {
-      $addToSet: {dislikes: userId},
-      $pull: {likes: userId}
+      $addToSet: { dislikes: userId },
+      $pull: { likes: userId },
     });
     res.status(200).send("The video has been disliked");
   } catch (error) {
     next(error);
   }
-};
+}
 
 module.exports = {
   updateUser,

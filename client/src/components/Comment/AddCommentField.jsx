@@ -1,11 +1,11 @@
 import React, {useState} from "react";
 import { Container, Button } from "./AddCommentFieldStyled";
 import useBackendApi from "../../hooks/useBackendApi";
-import Notification from "../../components/Modal/Notification/Notification"
+import Alert from "../Modal/Alert/Alert"
 
 const AddCommentField = (props) => {
   const backendApi = useBackendApi();
-  const [showNotification , setShowNotification] = useState(false);
+  const [showAlertToxicComment , setShowAlertToxicComment] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -21,7 +21,7 @@ const AddCommentField = (props) => {
       if (error.response && error.response.status === 400) {
         setTitle("Toxic comment error");
         setContent(error.response.data.error);
-        setShowNotification(true);
+        setShowAlertToxicComment(true);
       } else {
         console.log(error);
       }
@@ -36,7 +36,7 @@ const AddCommentField = (props) => {
     <Container>
       <Button onClick={cancelCommentHandler}>Cancel</Button>
       <Button onClick={addCommentHandler}>Comment</Button>
-      {showNotification ? <Notification title={title} content={content} setShowNotification={setShowNotification}/> : null}
+      {showAlertToxicComment ? <Alert title={title} content={content} setShowAlert={setShowAlertToxicComment}/> : null}
     </Container>
   );
 };

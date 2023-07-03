@@ -3,6 +3,7 @@ const cors = require("cors");
 const userRoutes = require("./routes/user.route");
 const videoRoutes = require("./routes/video.route");
 const commentRoutes = require("./routes/comment.route");
+const notificationRoutes = require("./routes/notification.route");
 const authRoutes = require("./routes/auth.route");
 const errorHandler = require("./middlewares/errorHandler");
 const { loadModel } = require("./services/classifyToxicComments.service");
@@ -16,7 +17,7 @@ const modelVerifyToxicComment = async () => {
     const model = await loadModel();
     app.locals.toxicityModel = model;
   } catch (err) {
-    console.error('Error loading model:', err);
+    console.error("Error loading model:", err);
   }
 };
 
@@ -35,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/videos", videoRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use(errorHandler);
 

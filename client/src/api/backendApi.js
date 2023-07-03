@@ -123,14 +123,21 @@ const backendApi = {
   },
 
   addComment: async (videoId, desc) => {
-    const path = `comments/addComment/${videoId}`;
+    const path = `/comments/addComment/${videoId}`;
     const comment = await axiosClient.post(path, {desc});
     return comment;
   },
 
   deleteComment: async (commentId) => {
-    const path = `comments/${commentId}`;
+    const path = `/comments/${commentId}`;
     return await axiosClient.delete(path);
+  },
+
+  //Notifications
+  getAllNotifications: async () => {
+    const path = `/notifications`;
+    const notifications = await axiosClient.get(path);
+    return notifications;
   },
 
   interceptors: axiosClient.interceptors,

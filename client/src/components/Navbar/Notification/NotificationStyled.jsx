@@ -7,17 +7,21 @@ export const Container = styled.div`
   min-width: 240px;
   border-radius: 20px;
   position: fixed;
-  top: 15px;
+  top: 50px;
   right: 115px;
 `;
 
 export const Wrapper = styled.div`
-  padding: 18px 10px;
+  padding: 0px 10px;
 `;
 
-export const AccountInfo = styled.div`
+export const NotificationInfo = styled.div`
   display: flex;
   align-items: center;
+  &:hover {
+    background-color: ${({ theme }) => theme.soft};
+  }
+  margin: 10px 0px;
 `;
 
 export const Avatar = styled.img`
@@ -27,23 +31,7 @@ export const Avatar = styled.img`
   background-color: #999;
 `;
 
-export const Info = styled.div`
-  font-size: 16px;
-  margin-left: 10px;
-`;
-
-export const Item = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
+export const NotificationText = styled.div`
   cursor: pointer;
-  padding: 7.5px 0px;
-  &:hover {
-    background-color: ${({ theme }) => theme.soft};
-  }
-`;
-
-export const Hr = styled.hr`
-  margin: 15px 0px;
-  border: 0.5px solid ${({ theme }) => theme.soft};
+  margin-left: 10px;
 `;

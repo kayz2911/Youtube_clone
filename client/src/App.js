@@ -1,4 +1,5 @@
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ThemeProvider } from "styled-components";
 import { Container, Main, Wrapper } from "./AppStyled";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -10,6 +11,8 @@ import Home from "./pages/Home/Home";
 import PersistLogin from "./components/auth/PersistLogin";
 import RequireAuth from "./components/Modal/RequireAuth/RequireAuth";
 import PageNotFound from "./components/HandleError/PageNotFound";
+import { socketConnect, socketDisconnect } from "./store/socketSlice";
+import OnlineNotification from "./components/OnlineNotification/OnlineNotification";
 
 const Login = React.lazy(() => import("./pages/Login/Login"));
 const ForgotPassword = React.lazy(() =>
@@ -27,7 +30,33 @@ const VideoCategory = React.lazy(() =>
 const Report = React.lazy(() => import("./pages/Report/Report"));
 
 function App() {
+  const { socket } = useSelector((state) => state.socket);
+  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [darkMode, setDarkMode] = useState(true);
+
+  useEffect(() => {
+    let isInitialRender = true;
+
+    if (currentUser) {
+      dispatch(socketConnect());
+    }
+
+    if (!isInitialRender) {
+      dispatch(socketDisconnect());
+    } else {
+      isInitialRender = false;
+    }
+
+    // Cleanup function to disconnect the socket
+    return () => {
+      if (socket) {
+        dispatch(socketDisconnect());
+      }
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, currentUser]);
 
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
@@ -83,6 +112,7 @@ function App() {
               </Suspense>
             </Wrapper>
           </Main>
+          <OnlineNotification></OnlineNotification>
         </BrowserRouter>
       </Container>
     </ThemeProvider>

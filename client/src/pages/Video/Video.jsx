@@ -40,6 +40,7 @@ const Video = () => {
   const backendApi = useBackendApi();
   const { currentUser } = useSelector((state) => state.user);
   const { currentVideo } = useSelector((state) => state.video);
+  const { socket } = useSelector((state) => state.socket);
   const underDevelop = useUnderDevelopment();
   const [channel, setChannel] = useState({});
   const [showRequireAuthModal, setShowRequireAuthModal] = useState(false);
@@ -93,9 +94,13 @@ const Video = () => {
       setShowRequireAuthModal(true);
     } else {
       try {
-        currentUser.subscribedUsers?.includes(channel._id)
-          ? await backendApi.unsubscribeUser(channel._id)
-          : await backendApi.subscribeUser(channel._id);
+        if (currentUser.subscribedUsers?.includes(channel._id)) {
+          await backendApi.unsubscribeUser(channel._id);
+        } else {
+          await backendApi.subscribeUser(channel._id);
+          socket.emit("subscribeChannel", {channel});
+        }
+
         dispatch(userActions.subscription(channel._id));
       } catch (error) {
         console.log(error);
@@ -164,7 +169,7 @@ const Video = () => {
                   {Intl.NumberFormat("en-US", {
                     notation: "compact",
                     maximumFractionDigits: 1,
-                  }).format(channel.subscribers)}{" "}
+                  }).format(channel.subscribers?.length)}{" "}
                   subscribers
                 </ChannelCounter>
                 <Description>{currentVideo.desc}</Description>
