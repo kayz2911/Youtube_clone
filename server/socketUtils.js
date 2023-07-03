@@ -1,18 +1,22 @@
-let onlineUsers = [];
+let socketUtils = {
+  onlineUsers: [],
 
-const addUser = (user, socketId) => {
-  !onlineUsers.some((onlineUser) => onlineUser.socketId === socketId) &&
-    onlineUsers.push({ user, socketId });
+  addUser(user, socketId) {
+    !this.onlineUsers.some((onlineUser) => onlineUser.user.email === user.email) &&
+      this.onlineUsers.push({ user, socketId });
+  },
+
+  removeUser(socketId) {
+    this.onlineUsers = this.onlineUsers.filter(
+      (onlineUser) => onlineUser.socketId !== socketId
+    );
+  },
+
+  getUser(socketId) {
+    return this.onlineUsers.find(
+      (onlineUser) => onlineUser.socketId === socketId
+    );
+  },
 };
 
-const removeUser = (socketId) => {
-  onlineUsers = onlineUsers.filter(
-    (onlineUser) => onlineUser.socketId !== socketId
-  );
-};
-
-const getUser = (socketId) => {
-  return onlineUsers.find((onlineUser) => onlineUser.socketId === socketId);
-};
-
-module.exports = { onlineUsers, addUser, removeUser, getUser };
+module.exports = socketUtils;
