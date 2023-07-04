@@ -11,7 +11,7 @@ export const OauthSignIn = (params) => {
   var configs = {
     client_id:
       "401220103720-9l4v878v94r3854sbpo3cb15mbdb93ra.apps.googleusercontent.com",
-    redirect_uri: "http://localhost:3000/report?oauth_callback=1",
+    redirect_uri: `${process.env.REACT_APP_CLIENT_DOMAIN}/report?oauth_callback=1`,
     scope: "https://www.googleapis.com/auth/gmail.send",
     state: JSON.stringify(params),
     include_granted_scopes: "true",
