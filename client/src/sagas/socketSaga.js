@@ -4,12 +4,12 @@ import { socketActions } from "../store/socketSlice";
 
 // Socket connection handler saga
 function* socketConnectSaga(action) {
-  const SERVER = process.env.SERVER_DOMAIN;
+  const SERVER = process.env.REACT_APP_SERVER_DOMAIN;
   let { socket } = yield select((state) => state.socket);
 
   if (!socket) {
     const { currentUser } = yield select((state) => state.user);
-    const socketConnection = io.connect("http://localhost:8800", {
+    const socketConnection = io.connect(SERVER, {
       query: {
         currentUser: JSON.stringify(currentUser),
       },
