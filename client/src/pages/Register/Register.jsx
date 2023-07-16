@@ -108,10 +108,10 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setLoading(true);
     if (!usernameIsValid || !emailIsValid || !passwordIsValid || !img) {
       return;
     }
+    setLoading(true);
     await uploadImgFirebase(img, "images/channelImg/").catch((error) => {
       console.log("Error on uploading image" + error);
       setLoading(false);
