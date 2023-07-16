@@ -19,7 +19,7 @@ const AddCommentField = (props) => {
       props.onCancelComment();
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        setTitle("Toxic comment error");
+        setTitle("Toxic comment detection");
         setContent(error.response.data.error);
         setShowAlertToxicComment(true);
       } else {
