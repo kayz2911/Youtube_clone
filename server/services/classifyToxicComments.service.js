@@ -8,10 +8,6 @@ const predictToxicity = async (req, res, next) => {
   const comment = req.body?.desc;
   const model = req.app.locals.toxicityModel;
 
-  if (!model) {
-    await loadModel();
-  }
-
   try {
     const isToxicComment = await model.classify(comment).then((prediction) => {
       for (const classification of prediction) {
