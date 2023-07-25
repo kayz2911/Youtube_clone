@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "8800:8800"  # Map server's port 8800 to host's port 8800
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"  # Map client's port 3000 to host's port 3000
+    depends_on:
+      - server  # Specify that the client service depends on the server service

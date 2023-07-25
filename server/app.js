@@ -23,9 +23,14 @@ const modelVerifyToxicComment = async () => {
 
 modelVerifyToxicComment();
 
+const allowedOrigins = [
+  process.env.CLIENT_DOMAIN,
+  "https://a49a-27-69-13-24.ngrok-free.app"
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_DOMAIN,
+    origin: allowedOrigins,
     credentials: true,
   })
 );
