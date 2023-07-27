@@ -43,6 +43,6 @@ const PORT = 8800;
 
 mongoService.connect("youtube_clone");
 
-server.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+server.listen(process.env.PORT || PORT, () => {
+  console.log(`Server is running at http://localhost:${process.env.PORT}`);
 });
