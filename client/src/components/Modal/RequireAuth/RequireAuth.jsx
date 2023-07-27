@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -11,12 +12,26 @@ import {
   ButtonLogin,
   Hr,
 } from "./RequireAuthStyled";
+import LoadingSpinner from "../../Loading/LoadingSpinner";
 
 const RequireAuth = (props) => {
   const navigate = useNavigate();
   const path = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
   const currentUser = useSelector((state) => state.user);
   const pathMustRequireAuth = ["/subscribeVideo", "/myVideo", "/likedVideo"];
+
+  useEffect(() => {
+    // Simulate an asynchronous operation to check the authentication status
+    // You should replace this with your actual authentication check
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingSpinner />
+  }
 
   if (!currentUser.currentUser?.accessToken) {
     return (
