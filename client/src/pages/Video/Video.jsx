@@ -35,6 +35,7 @@ import useBackendApi from "../../hooks/useBackendApi";
 import moment from "moment";
 import RequireAuth from "../../components/Modal/RequireAuth/RequireAuth";
 import useUnderDevelopment from "../../hooks/useUnderDevelopment";
+import ShareMedia from "../../components/Modal/ShareSocialMedia/ShareMedia";
 
 const Video = () => {
   const backendApi = useBackendApi();
@@ -44,6 +45,7 @@ const Video = () => {
   const underDevelop = useUnderDevelopment();
   const [channel, setChannel] = useState({});
   const [showRequireAuthModal, setShowRequireAuthModal] = useState(false);
+  const [showShareMedia, setShowShareMedia] = useState(false);
   const dispatch = useDispatch();
   const path = useLocation().pathname.split("/")[2];
 
@@ -150,9 +152,10 @@ const Video = () => {
                   )}
                   {currentVideo.dislikes?.length}
                 </Button>
-                <Button onClick={underDevelop}>
+                <Button onClick={() => setShowShareMedia(true)}>
                   <ReplyOutlinedIcon /> Share
                 </Button>
+                {showShareMedia && <ShareMedia setShowShareMedia={setShowShareMedia}/>}
                 <Button onClick={underDevelop}>
                   <AddTaskOutlinedIcon /> Save
                 </Button>
