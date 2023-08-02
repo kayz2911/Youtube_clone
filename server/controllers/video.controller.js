@@ -6,7 +6,7 @@ const { errorResponse, DEFAULT_PAGE_SIZE } = require("../configs/route.config");
 async function trendingVideo(req, res, next) {
   try {
     const curr = new Date(); //get current date
-    const lastWeek = new Date(curr.getTime() - 1000 * 24 * 60 * 60 * 1000); //get last week date
+    const lastWeek = new Date(curr.getTime() - 30 * 24 * 60 * 60 * 1000); //get last week date
     const page = req.query.page;
 
     const [videos] = await Video.aggregate([
@@ -49,6 +49,7 @@ async function randomVideo(req, res, next) {
     const page = req.query.page;
 
     const [videos] = await Video.aggregate([
+      { $sample: { size: 100 } },
       {
         $facet: {
           docs: [
