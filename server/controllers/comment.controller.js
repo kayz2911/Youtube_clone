@@ -21,8 +21,7 @@ async function addComment(req, res, next) {
 async function deleteComment(req, res, next) {
   try {
     const comment = await Comment.findById(req.params.id);
-    const video = await Video.findById(req.params.id);
-    if (req.user.id === comment.userId || req.user.id === video.userId) {
+    if (req.user.id === comment.userId) {
       await Comment.findByIdAndDelete(req.params.id);
       res.status(204).json("The comment has been deleted");
     } else {
