@@ -7,6 +7,7 @@ const notificationRoutes = require("./routes/notification.route");
 const authRoutes = require("./routes/auth.route");
 const errorHandler = require("./middlewares/errorHandler");
 const { loadModel } = require("./services/classifyToxicComments.service");
+const { removeSeenNotifcation } = require("./jobs/removeSeenNotification");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -23,9 +24,7 @@ const modelVerifyToxicComment = async () => {
 
 modelVerifyToxicComment();
 
-const allowedOrigins = [
-  process.env.CLIENT_DOMAIN
-];
+const allowedOrigins = [process.env.CLIENT_DOMAIN];
 
 app.use(
   cors({
@@ -33,6 +32,9 @@ app.use(
     credentials: true,
   })
 );
+
+//Run jobs
+removeSeenNotifcation();
 
 app.use(express.json());
 
@@ -43,9 +45,5 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 app.use(errorHandler);
-
-app.get("/", (req, res) => {
-  res.send("Youtube clone api");
-});
 
 module.exports = app;
