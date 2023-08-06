@@ -140,6 +140,12 @@ const backendApi = {
     return notifications;
   },
 
+  seenAllNotifications: async () => {
+    const path = `/notifications/seenAllNotifications`;
+    const notifications = await axiosClient.put(path);
+    return notifications;
+  },
+
   interceptors: axiosClient.interceptors,
 
   axiosPrivateClient: axiosPrivateClient,

@@ -10,5 +10,10 @@ router.get("/",
   notificationController.getAllNotifications,
 );
 
+//Get all notifications
+router.put("/seenAllNotifications", 
+  authorizerService.verifyAccessToken,
+  notificationController.markSeenAllNotifications,
+);
 
 module.exports = router;

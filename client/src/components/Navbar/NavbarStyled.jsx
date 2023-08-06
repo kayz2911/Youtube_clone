@@ -66,3 +66,19 @@ export const Avatar = styled.img`
   border-radius: 50%;
   background-color: #999;
 `;
+
+export const NotificationContainer = styled.div`
+  display: inline-block;
+  position: relative;
+`;
+
+export const NotificationCount = styled.span`
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 50%;
+`;

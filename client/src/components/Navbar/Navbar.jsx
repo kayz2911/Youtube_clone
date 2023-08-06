@@ -8,6 +8,8 @@ import {
   Button,
   User,
   Avatar,
+  NotificationCount,
+  NotificationContainer,
 } from "./NavbarStyled";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
@@ -57,15 +59,41 @@ const Navbar = () => {
 
   useEffect(() => {
     const getAllNotifications = async () => {
-      if (showNotification) {
+      try {
         const notifications = await (
           await backendApi.getAllNotifications()
         ).data;
         setNotifications(notifications);
+      } catch (error) {
+        console.log(error);
       }
     };
-    getAllNotifications();
-  }, [backendApi, showNotification]);
+
+    let intervalId;
+
+    if (currentUser) {
+      getAllNotifications();
+
+      intervalId = setInterval(() => {
+        getAllNotifications();
+      }, 10000);
+    }
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [backendApi, currentUser]);
+
+  const handleClickShowNotifications = async () => {
+    setShowNotification(!showNotification);
+    if (showNotification) {
+      try {
+        await backendApi.seenAllNotifications();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   return (
     <>
@@ -87,15 +115,20 @@ const Navbar = () => {
                 onClick={() => setShowUploadVideoModal(true)}
                 onMouseOver={hoverIconHandler}
               />
-              <NotificationsOutlinedIcon
-                onClick={() => {
-                  setShowNotification(!showNotification);
-                }}
-                onMouseOver={hoverIconHandler}
-              />
-              {showNotification ? (
-                <Notification notifications={notifications} />
-              ) : null}
+              <NotificationContainer>
+                <NotificationsOutlinedIcon
+                  onClick={handleClickShowNotifications}
+                  onMouseOver={hoverIconHandler}
+                />
+                {notifications.filter((noti) => !noti.seen).length > 0 && (
+                  <NotificationCount>
+                    {notifications.filter((noti) => !noti.seen).length}
+                  </NotificationCount>
+                )}
+                {showNotification ? (
+                  <Notification notifications={notifications} />
+                ) : null}
+              </NotificationContainer>
               {showOptionBox ? (
                 <OptionBox
                   hideOptionBox={() => {
