@@ -71,7 +71,7 @@ const Video = () => {
     } else {
       try {
         await backendApi.likeVideo(currentVideo._id);
-        dispatch(videoActions.like(currentVideo._id));
+        dispatch(videoActions.like(currentUser._id));
       } catch (error) {
         console.log(error);
       }
@@ -84,7 +84,7 @@ const Video = () => {
     } else {
       try {
         await backendApi.dislikeVideo(currentVideo._id);
-        dispatch(videoActions.dislike(currentVideo._id));
+        dispatch(videoActions.dislike(currentUser._id));
       } catch (error) {
         console.log(error);
       }

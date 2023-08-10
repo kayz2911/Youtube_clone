@@ -30,6 +30,12 @@ export const videoSlice = createSlice({
             (userId) => userId === action.payload
           ), 1
         );
+      } else {
+        currentVideo.likes.splice(
+          currentVideo.likes.findIndex(
+            (userId) => userId === action.payload
+          ), 1
+        );
       }
     },
     dislike: (state, action) => {
@@ -38,6 +44,12 @@ export const videoSlice = createSlice({
         currentVideo.dislikes.push(action.payload);
         currentVideo.likes.splice(
           currentVideo.likes.findIndex(
+            (userId) => userId === action.payload
+          ), 1
+        );
+      } else {
+        currentVideo.dislikes.splice(
+          currentVideo.dislikes.findIndex(
             (userId) => userId === action.payload
           ), 1
         );
