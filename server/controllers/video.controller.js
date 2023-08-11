@@ -258,7 +258,7 @@ async function addView(req, res, next) {
         if (index > -1) {
           userJustView.splice(index, 1);
         }
-      }, 30000); 
+      }, 600000); 
 
       res.status(200).json("The view has been increased");
     } catch (error) {
