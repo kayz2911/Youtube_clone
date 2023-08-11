@@ -65,6 +65,21 @@ const Video = () => {
     fetchData();
   }, [backendApi, dispatch, path]);
 
+  useEffect(() => {
+    const increaseViewAfterDelay = async () => {
+      if (currentVideo) {
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        try {
+          await backendApi.addView(currentVideo._id);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+
+    increaseViewAfterDelay();
+  }, [backendApi, currentVideo]);
+
   const handleLikeClick = async () => {
     if (!currentUser) {
       setShowRequireAuthModal(true);

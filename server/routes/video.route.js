@@ -51,6 +51,7 @@ router.get(
 router.get(
   "/view/:id",
   routeValidator.validateIDParam,
+  authorizerService.verifyAccessToken,
   videoController.addView
 );
 

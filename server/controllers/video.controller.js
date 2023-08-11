@@ -240,15 +240,34 @@ async function getVideo(req, res, next) {
   }
 }
 
+const userJustView = []; 
+
 async function addView(req, res, next) {
-  try {
-    await Video.findByIdAndUpdate(req.params.id, {
-      $inc: { views: 1 },
-    });
-    res.status(200).json("The view has been increased");
-  } catch (error) {
-    next(error);
+  const userId = req.user.id;
+
+  if(!userJustView.includes(userId)) {
+    userJustView.push(userId);
+
+    try {
+      await Video.findByIdAndUpdate(req.params.id, {
+        $inc: { views: 1 },
+      });
+
+      setTimeout(() => {
+        const index = userJustView.indexOf(userId);
+        if (index > -1) {
+          userJustView.splice(index, 1);
+        }
+      }, 30000); 
+
+      res.status(200).json("The view has been increased");
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    res.status(200).json("View not counted");
   }
+  
 }
 
 async function getVideoByTag(req, res, next) {

@@ -115,6 +115,12 @@ const backendApi = {
     return video;
   },
 
+  addView: async (videoId) => {
+    const path = `/videos/view/${videoId}`;
+    const video = await axiosClient.get(path);
+    return video;
+  },
+
   //Comment
   getAllComments: async (videoId) => {
     const path = `/comments/${videoId}`;
