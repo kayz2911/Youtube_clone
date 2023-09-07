@@ -8,10 +8,14 @@ const authRoutes = require("./routes/auth.route");
 const errorHandler = require("./middlewares/errorHandler");
 const { loadModel } = require("./services/classifyToxicComments.service");
 const { removeSeenNotifcation } = require("./jobs/removeSeenNotification");
+const { syncTotalViewVideo } = require("./jobs/syncTotalViewVideo");
+const redisService = require("./services/redis.service");
 const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
+
+redisService.connect();
 
 const modelVerifyToxicComment = async () => {
   try {
@@ -35,6 +39,7 @@ app.use(
 
 //Run jobs
 removeSeenNotifcation();
+syncTotalViewVideo();
 
 app.use(express.json());
 

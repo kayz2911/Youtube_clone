@@ -1,6 +1,7 @@
 const Video = require("../models/Video.model");
 const User = require("../models/User.model");
 const Notification = require("../models/Notification.model");
+const { redisClient } = require("../services/redis.service");
 const { errorResponse, DEFAULT_PAGE_SIZE } = require("../configs/route.config");
 
 async function trendingVideo(req, res, next) {
@@ -177,13 +178,18 @@ async function addVideo(req, res, next) {
   try {
     // Create an array of promises for creating notifications
     const notificationPromises = subscribers.map((subscriber) =>
-      Notification.create({ userRequestId: req.user.id, userRecipientId: subscriber, typeNoti: 0 })
+      Notification.create({
+        userRequestId: req.user.id,
+        userRecipientId: subscriber,
+        typeNoti: 0,
+      })
     );
 
     // Wait for all notification promises to resolve
     await Promise.all(notificationPromises);
 
     const savedVideo = await newVideo.save();
+    await redisClient.set(`video::${savedVideo._id}`, 0);
     res.status(201).json(savedVideo);
   } catch (error) {
     next(error);
@@ -240,34 +246,24 @@ async function getVideo(req, res, next) {
   }
 }
 
-const userJustView = []; 
-
 async function addView(req, res, next) {
   const userId = req.user.id;
+  const videoId = req.params.id;
 
-  if(!userJustView.includes(userId)) {
-    userJustView.push(userId);
-
-    try {
-      await Video.findByIdAndUpdate(req.params.id, {
-        $inc: { views: 1 },
-      });
-
-      setTimeout(() => {
-        const index = userJustView.indexOf(userId);
-        if (index > -1) {
-          userJustView.splice(index, 1);
-        }
-      }, 600000); 
-
-      res.status(200).json("The view has been increased");
-    } catch (error) {
-      next(error);
+  try {
+    const keyStore = `userId::${userId}_videoId::${videoId}`;
+    const userView = await redisClient.set(keyStore, "hits", {
+      NX: true,
+      EX: 600,
+    });
+    if (userView === "OK") {
+      await redisClient.incrBy(`video::${videoId}`, 1);
+      res.status(200).send("User view video");
     }
-  } else {
-    res.status(200).json("View not counted");
+    res.status(200).send("User already view video in 10 minutes before");
+  } catch (error) {
+    console.log(error);
   }
-  
 }
 
 async function getVideoByTag(req, res, next) {

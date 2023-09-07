@@ -43,7 +43,7 @@ const loadVideos = async (id) => {
       videoUrl: `${config.BASE_VIDEO_URL}/${dbModel.id.videoId}`,
       desc: dbModel.snippet.description,
       views: helpers.getRandomIntInclusive(1000000, 100000000),
-      tags: ["music"],
+      tags: ["movie"],
       likes: [],
       dislikes: [],
       createdAt: new Date(dbModel.snippet.publishedAt),
@@ -51,7 +51,7 @@ const loadVideos = async (id) => {
   };
 
   try {
-    const url = `${config.BASE_URL}/search?part=snippet&maxResults=50&key=${config.API_KEY}&type=video&relatedToVideoId=${id}`;
+    const url = `${config.BASE_URL}/search?part=snippet&maxResults=50&key=${config.API_KEY}&type=video&videoCategoryId=${id}`;
     const dbModel = await (await axios.get(url)).data;
 
     for (const item of dbModel.items) {
@@ -86,7 +86,7 @@ const updateUserId = async () => {
 async function test() {
   await mongoService.connect("youtube_clone");
 
-  await loadVideos("ECxVfrwwTp0");
+  await loadVideos(1);
   await updateUserId();
 
   await mongoService.disconnect();
