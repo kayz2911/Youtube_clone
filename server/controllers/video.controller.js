@@ -251,14 +251,22 @@ async function addView(req, res, next) {
   const videoId = req.params.id;
 
   try {
-    const keyStore = `userId::${userId}_videoId::${videoId}`;
-    const userView = await redisClient.set(keyStore, "hits", {
+    const userVideoKey = `userId::${userId}_videoId::${videoId}`;
+    const videoKey = `video::${videoId}`;
+    const userView = await redisClient.set(userVideoKey, "seen", {
       NX: true,
       EX: 600,
     });
     if (userView === "OK") {
-      await redisClient.incrBy(`video::${videoId}`, 1);
-      res.status(200).send("User view video");
+      console.log(await redisClient.exists(videoKey));
+      if ((await redisClient.exists(videoKey)) != 1) {
+        const video = await Video.findById(videoId);
+        await redisClient.set(videoKey, video.views, {
+          NX: true,
+        });
+      }
+      await redisClient.incrBy(videoKey, 1);
+      return res.status(200).send("User view video");
     }
     res.status(200).send("User already view video in 10 minutes before");
   } catch (error) {
