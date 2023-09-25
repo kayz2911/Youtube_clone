@@ -258,7 +258,6 @@ async function addView(req, res, next) {
       EX: 600,
     });
     if (userView === "OK") {
-      console.log(await redisClient.exists(videoKey));
       if ((await redisClient.exists(videoKey)) != 1) {
         const video = await Video.findById(videoId);
         await redisClient.set(videoKey, video.views, {
