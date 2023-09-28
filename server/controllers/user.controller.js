@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User.model");
 const Video = require("../models/Video.model");
-const Notification = require("../models/Notification.model");
+const createNotification = require("../services/rabbitmq/notification.service");
 
 async function updateUser(req, res, next) {
   if (req.params.id === req.user.id) {
@@ -71,16 +71,17 @@ async function subscribeUser(req, res, next) {
       $push: { subscribers: req.user.id },
     });
 
-    const createNotification = Notification.create({
+    const notificationContent = {
       userRequestId: req.user.id,
-      userRecipientId: req.params.id,
+      userRecipientId: [req.params.id],
       typeNoti: 1,
-    });
+    };
+
+    createNotification(notificationContent);
 
     await Promise.all([
       updateCurrentUser,
       updateTargetUser,
-      createNotification,
     ]);
 
     res.status(200).json("subscribe successful");

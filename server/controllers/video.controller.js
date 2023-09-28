@@ -1,7 +1,7 @@
 const Video = require("../models/Video.model");
 const User = require("../models/User.model");
-const Notification = require("../models/Notification.model");
 const { redisClient } = require("../services/redis.service");
+const createNotification = require("../services/rabbitmq/notification.service");
 const { errorResponse, DEFAULT_PAGE_SIZE } = require("../configs/route.config");
 
 async function trendingVideo(req, res, next) {
@@ -174,19 +174,15 @@ async function likedVideo(req, res, next) {
 async function addVideo(req, res, next) {
   const newVideo = new Video({ userId: req.user.id, ...req.body });
   const user = await User.findById(req.user.id);
-  const subscribers = user.subscribers;
+  const userRecipientId = user.subscribers;
   try {
-    // Create an array of promises for creating notifications
-    const notificationPromises = subscribers.map((subscriber) =>
-      Notification.create({
-        userRequestId: req.user.id,
-        userRecipientId: subscriber,
-        typeNoti: 0,
-      })
-    );
+    const notificationContent = {
+      userRequestId: req.user.id,
+      userRecipientId: userRecipientId,
+      typeNoti: 0,
+    };
 
-    // Wait for all notification promises to resolve
-    await Promise.all(notificationPromises);
+    createNotification(notificationContent);
 
     const savedVideo = await newVideo.save();
     await redisClient.set(`video::${savedVideo._id}`, 0);

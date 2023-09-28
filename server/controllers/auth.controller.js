@@ -4,7 +4,7 @@ const {
   errorResponse,
   REFRESH_TOKEN_EXPIRE_TIME,
 } = require("../configs/route.config");
-const sendEmail = require("../services/sendEmail.service");
+const sendMail = require("../services/rabbitmq/sendEmail.service");
 const authorizerService = require("../services/authorizer.service");
 
 const tokenCookieOptions = {
@@ -120,14 +120,17 @@ async function handleForgetPasswordRequest(req, res, next) {
   user.save();
 
   //Send mail to fill new password
-  sendEmail(
-    user.email,
-    "Reset Password",
-    "Link to reset password: " +
+  const mailContent = {
+    to: user.email,
+    subject: "Reset Password",
+    text:
+      "Link to reset password: " +
       process.env.CLIENT_DOMAIN +
       "/reset_password?token=" +
-      token
-  );
+      token,
+  };
+
+  sendMail(mailContent);
 
   res.status(200).send("Mail sent");
 }
@@ -141,11 +144,13 @@ async function handleResetPassword(req, res) {
     password: bcrypt.hashSync(req.body.newPassword, salt),
   });
 
-  sendEmail(
-    user.email,
-    "Password Reset Confirmation",
-    "You have already reset password successfully",
-  );
+  const mailContent = {
+    to: user.email,
+    subject: "Password Reset Confirmation",
+    text: "You have already reset password successfully",
+  };
+
+  sendMail(mailContent);
 
   res.status(200).send("Password Reset mail sent");
 }

@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@tensorflow-models/toxicity": "^1.2.2",
+    "amqplib": "^0.10.3",
     "axios": "^1.2.2",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
